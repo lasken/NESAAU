@@ -151,6 +151,7 @@ function logoutStudent() {
   document.getElementById('duesPortalWrap').style.display = 'none';
 
   closeToast();
+  updateSidebarAuth(null);
   resetDues();
   updateDownloadButtons('unpaid');
 }
