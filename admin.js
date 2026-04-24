@@ -10,6 +10,14 @@ function toggleAdminSidebar() {
     document.body.style.overflow = 'hidden';
   }
 }
+
+function closeAdminSidebar() {
+  const sidebar = document.getElementById('adminSidebar');
+  const overlay = document.getElementById('adminSidebarOverlay');
+  sidebar.classList.remove('mobile-open');
+  overlay.classList.remove('active');
+  document.body.style.overflow = '';
+}
 async function hashPassword(password) {
   const buf = await crypto.subtle.digest(
     'SHA-256', new TextEncoder().encode(password)
@@ -71,6 +79,30 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function showPanel(name, btn) {
+  function showPanel(name, btn) {
+  document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.admin-nav-link').forEach(l => l.classList.remove('active'));
+
+  const panel = document.getElementById('panel-' + name);
+  
+  if (panel) {
+    panel.classList.add('active');
+  } else {
+    console.error("Could not find panel with ID: panel-" + name);
+  }
+
+  if (btn) btn.classList.add('active');
+
+  if (window.innerWidth < 768) closeAdminSidebar();
+
+  if (name === 'members') loadMembers();
+  if (name === 'stats') loadStats();
+  if (name === 'executives')    loadCurrentExecAdmin();
+  if (name === 'pastadmins')    loadPastAdminAdmin();
+  if (name === 'announcements') loadAdminAnnouncements();
+  if (name === 'spotlight')     loadAdminSpotlight();
+}
+  closeAdminSidebar();
   document.querySelectorAll('.admin-panel')
     .forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.admin-nav-link')
@@ -241,7 +273,7 @@ function renderMembers(list) {
       </td>
       <td>
         <select onchange="manualUpdateStatus('${m.id}', this.value)"
-                class="status-select">
+          class="status-select">
           <option value="">Change status</option>
           <option value="unpaid">Unpaid</option>
           <option value="pending">Pending</option>
