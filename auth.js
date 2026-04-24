@@ -190,7 +190,8 @@ function applySession(member) {
   document.getElementById('matricInput').value = member.matric_number;
   document.getElementById('nameInput').value   = member.full_name;
   document.getElementById('levelSel').value    = member.level;
-
+// Update sidebar student info for mobile
+  updateSidebarAuth(member);
   window._nesaauMember = member;
 
   // Show dues status toast after short delay
