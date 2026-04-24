@@ -345,3 +345,51 @@ function showAuthMsg(el, type, text) {
 
 // --- Run on page load ---
 document.addEventListener('DOMContentLoaded', loadStudentSession);
+function updateSidebarAuth(member) {
+  const sbLogin    = document.getElementById('sbLoginLink');
+  const sbDues     = document.getElementById('sbDuesLink');
+  const sbInfo     = document.getElementById('sbStudentInfo');
+  const sbMyDues   = document.getElementById('sbMyDuesLink');
+  const sbLogout   = document.getElementById('sbLogoutLink');
+  const sbAvatar   = document.getElementById('sbStudentAvatar');
+  const sbName     = document.getElementById('sbStudentName');
+  const sbMatric   = document.getElementById('sbStudentMatric');
+  const sbPill     = document.getElementById('sbDuesPill');
+
+  if (!sbLogin) return;
+
+  if (member) {
+    // Logged in
+    sbLogin.style.display  = 'none';
+    sbDues.style.display   = 'none';
+    sbInfo.style.display   = 'flex';
+    sbMyDues.style.display = 'flex';
+    sbLogout.style.display = 'flex';
+
+    const initials = member.full_name
+      .split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+    sbAvatar.textContent = initials;
+    sbName.textContent   = member.full_name;
+    sbMatric.textContent = member.matric_number + ' · ' + member.level + ' Level';
+
+    if (sbPill) {
+      if (member.dues_status === 'paid') {
+        sbPill.textContent = '✅ Dues Paid';
+        sbPill.className   = 'sb-dues-pill paid';
+      } else if (member.dues_status === 'pending') {
+        sbPill.textContent = '⏳ Under Review';
+        sbPill.className   = 'sb-dues-pill pending';
+      } else {
+        sbPill.textContent = '❌ Dues Not Paid';
+        sbPill.className   = 'sb-dues-pill unpaid';
+      }
+    }
+  } else {
+    // Logged out
+    sbLogin.style.display  = 'flex';
+    sbDues.style.display   = 'flex';
+    sbInfo.style.display   = 'none';
+    sbMyDues.style.display = 'none';
+    sbLogout.style.display = 'none';
+  }
+}
