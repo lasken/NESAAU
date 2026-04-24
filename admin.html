@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>NESAAU Admin Panel</title>
+  <link rel="icon" type="image/jpeg" href="logo.jpeg">
+  <link rel="apple-touch-icon" href="logo.jpeg">
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="admin.css"/>
+  <!-- NESAAU ADDITION: Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+</head>
+<body>
+
+<!-- ===== ADMIN LOGIN SCREEN ===== -->
+<!-- NESAAU ADDITION: Shown before admin is authenticated -->
+<div class="admin-login-screen" id="adminLoginScreen">
+  <div class="admin-login-card">
+    <div class="admin-login-logo">
+      <img src="logo.jpeg" alt="NASAAU Logo" class="nav-logo-img"/>
+      <div><strong>NESAAU</strong><small>Admin Panel</small></div>
+    </div>
+    <h2>Executive Login</h2>
+    <p>Only authorised executives can access this panel.</p>
+    <div class="form-row">
+      <label>Admin Email</label>
+      <input type="email" id="adminEmail" placeholder="exco@nesaau.edu.ng"/>
+    </div>
+    <div class="form-row">
+      <label>Password</label>
+      <input type="password" id="adminPassword" placeholder="Admin password"/>
+    </div>
+    <button class="btn-admin-login" onclick="adminLogin()">Login to Admin Panel</button>
+    <div class="auth-msg" id="adminLoginMsg"></div>
+  </div>
+</div>
+
+<!-- ===== ADMIN DASHBOARD ===== -->
+<!-- NESAAU ADDITION: Hidden until admin is authenticated -->
+<div class="admin-dashboard" id="adminDashboard" style="display:none;">
+
+  <!-- Sidebar -->
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar-brand">
+      <div class="admin-ring"><span>N</span></div>
+      <div><strong>NESAAU</strong><small>Admin Panel</small></div>
+    </div>
+    <nav class="admin-nav">
+  <a href="#" class="admin-nav-link active" onclick="showPanel('submissions', this)">
+    <i class="fa-solid fa-file-invoice-dollar"></i> Dues Submissions
+  </a>
+  <a href="#" class="admin-nav-link" onclick="showPanel('members', this)">
+    <i class="fa-solid fa-users"></i> All Members
+  </a>
+  <a href="#" class="admin-nav-link" onclick="showPanel('executives', this)">
+    <i class="fa-solid fa-user-tie"></i> Current Executives
+  </a>
+  <a href="#" class="admin-nav-link" onclick="showPanel('pastadmins', this)">
+    <i class="fa-solid fa-clock-rotate-left"></i> Past Administrations
+  </a>
+  <a href="#" class="admin-nav-link" onclick="showPanel('stats', this)">
+    <i class="fa-solid fa-chart-line"></i> Stats
+  </a>
+  <a href="#" class="admin-nav-link" onclick="showPanel('announcements', this)">
+    <i class="fa-solid fa-bullhorn"></i> Announcements
+  </a>
+  <a href="#" class="admin-nav-link" onclick="showPanel('spotlight', this)">
+    <i class="fa-solid fa-star"></i> Spotlight
+  </a>
+</nav>
+  <div class="admin-sidebar-foot">
+    <button class="admin-logout-btn" onclick="adminLogout()">
+      <i class="fa-solid fa-right-from-bracket"></i> Logout
+    </button>
+    <a href="index.html" target="_blank" class="admin-view-site">
+      <img src="logo.jpeg" class="foot-logo-icon" alt="NESAAU"> 
+      View Website
+    </a>
+  </div>
+  </aside>
+
+  <!-- ===== PANEL: ANNOUNCEMENTS ===== -->
+  <div class="admin-panel" id="panel-announcements">
+  <div class="admin-panel-hdr">
+    <div class="hdr-title-flex">
+      <img src="logo.jpeg" class="panel-hdr-logo" alt="NESAAU Logo">
+      
+      <div class="hdr-text-group">
+        <h2>Announcements</h2>
+        <span class="panel-subtitle">Post notices, seminar dates, elections, and general updates</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create new announcement -->
+  <div class="admin-create-card">
+    <h3>Post New Announcement</h3>
+    <div class="form-row">
+      <label>Title</label>
+      <input type="text" id="annTitle" placeholder="e.g. NESAAU Seminar — May 2025"/>
+    </div>
+    <div class="form-row">
+      <label>Type</label>
+    <div class="form-group">
+      <label for="annType">Announcement Category</label>
+      <select id="annType" class="admin-select">
+        <option value="General">General Update</option>
+        <option value="Seminar">Academic Seminar</option>
+        <option value="Election">Electoral Notice</option>
+        <option value="Meeting">Executive Meeting</option>
+        <option value="Welfare">Student Welfare</option>
+      </select>
+    </div>
+    </div>
+    <div class="form-row">
+      <label>Description</label>
+      <textarea id="annDesc" rows="4" placeholder="Full details of the announcement..."></textarea>
+    </div>
+    <div class="form-row">
+      <label>Event Date (optional)</label>
+      <input type="text" id="annEventDate" placeholder="e.g. Friday, 16th May 2025 — 10:00 AM"/>
+    <div class="form-actions">
+      <button class="btn-admin-action" onclick="postAnnouncement()">
+        <i class="fa-solid fa-paper-plane"></i> Post Announcement
+      </button>
+      <div class="admin-form-msg" id="annMsg"></div>
+    </div>
+  </div>
+
+  <!-- Existing announcements -->
+  <div class="admin-list" id="annAdminList">
+    <div class="loading-state">Loading announcements...</div>
+  </div>
+</div>
+
+<!-- ===== PANEL: SPOTLIGHT ===== -->
+<div class="admin-panel" id="panel-spotlight">
+  <div class="admin-panel-hdr">
+    <div class="hdr-title-flex">
+      <img src="logo.jpeg" class="panel-hdr-logo" alt="NESAAU Logo">
+      <div class="hdr-text-group">
+        <h2>Personnel Spotlight</h2>
+        <span class="panel-subtitle">Highlight and celebrate the achievements of our featured members</span>
+      </div>
+    </div>
+  </div>
+  <div class="admin-create-card">
+    <h3>Post This Week's Spotlight</h3>
+    <p style="font-size:.85rem;color:var(--gray);margin-bottom:16px;">
+      Posting a new spotlight will automatically replace the current one shown on the website.
+    </p>
+    <div class="form-row">
+      <label>Full Name</label>
+      <input type="text" id="spName" placeholder="e.g. Enter Full Name"/>
+    </div>
+    <div class="form-row">
+      <label>Role / Title</label>
+      <input type="text" id="spRole" placeholder="e.g. UI/UX Designer,etc..."/>
+    </div>
+    <div class="form-row">
+      <label>Week Label</label>
+      <input type="text" id="spWeek" placeholder="e.g. Week of April 21, 2026"/>
+    </div>
+    <div class="form-row">
+      <label>Bio / Description</label>
+      <textarea id="spBio" rows="4" placeholder="Write a detailed description of this person, who they are, what they do, their achievements in NESAAU..."></textarea>
+    </div>
+    <div class="form-row">
+      <label>Skills (comma-separated)</label>
+      <input type="text" id="spSkills" placeholder="UI/UX Design, Web Development, Brand Identity, Motion Design"/>
+    </div>
+    <div class="form-row">
+      <label>Work Samples (comma-separated URLs or descriptions)</label>
+      <input type="text" id="spSamples" placeholder="https://portfolio.com, https://behance.net/name, NESAAU Website"/>
+    </div>
+    <div class="form-row">
+      <label>WhatsApp Number (with country code, no +)</label>
+      <input type="text" id="spWhatsapp" placeholder="e.g. 2348012345678"/>
+    </div>
+    <div class="form-row">
+      <label>Photo</label>
+      <input type="file" id="spPhoto" accept="image/*"/>
+    <div class="form-actions">
+      <button class="btn-admin-action spotlight-btn" onclick="postSpotlight()">
+        <i class="fa-solid fa-medal"></i> Post Spotlight
+      </button>
+      <div class="admin-form-msg" id="spMsg"></div>
+    </div>
+  </div>
+
+  <!-- Current spotlight preview -->
+  <div class="admin-list" id="spAdminList">
+    <div class="loading-state">Loading current spotlight...</div>
+  </div>
+</div>
+
+  <!-- Main Content -->
+  <main class="admin-main">
+
+    <!-- ===== PANEL: DUES SUBMISSIONS ===== -->
+    <!-- NESAAU ADDITION: Where excos approve/reject payments -->
+    <div class="admin-panel active" id="panel-submissions">
+    <div class="admin-panel-hdr">
+      <div class="hdr-title-flex">
+        <img src="logo.jpeg" class="panel-hdr-logo" alt="NESAAU Logo">
+        
+        <div class="hdr-text-group">
+          <h2>Dues Submissions</h2>
+          <span class="panel-subtitle">Review receipts and approve or reject payments</span>
+        </div>
+      </div>
+    </div>
+
+      <div class="filter-bar">
+        <button class="filter-btn active" onclick="filterSubmissions('all', this)">
+          All
+        </button>
+        <button class="filter-btn" onclick="filterSubmissions('pending', this)">
+          <i class="fa-solid fa-clock"></i> Pending
+        </button>
+        <button class="filter-btn" onclick="filterSubmissions('paid', this)">
+          <i class="fa-solid fa-circle-check"></i> Approved
+        </button>
+        <button class="filter-btn" onclick="filterSubmissions('rejected', this)">
+          <i class="fa-solid fa-circle-xmark"></i> Rejected
+        </button>
+      </div>
+    </div>
+      <div class="submissions-list" id="submissionsList">
+        <div class="loading-state">Loading submissions...</div>
+      </div>
+    </div>
+
+    <!-- ===== PANEL: ALL MEMBERS ===== -->
+    <!-- NESAAU ADDITION: Full member directory -->
+    <div class="admin-panel" id="panel-members">
+      <div class="admin-panel-hdr">
+        <div class="hdr-title-flex">
+          <img src="logo.jpeg" class="panel-hdr-logo" alt="NESAAU Logo">
+          
+          <div class="hdr-text-group">
+            <h2>Membership Registry</h2>
+            <span class="panel-subtitle">Verified student directory for the 2025/2026 academic session</span>
+          </div>
+        </div>
+      </div>
+      <div class="members-search">
+        <input type="text" id="memberSearch" placeholder="Search by name or matric number..." oninput="filterMembers()"/>
+      </div>
+      <div class="members-table-wrap">
+        <table class="members-table" id="membersTable">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Matric No.</th>
+              <th>Level</th>
+              <th>Dues Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="membersTableBody">
+            <tr><td colspan="5" class="loading-state">Loading members...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== PANEL: CURRENT EXECUTIVES ===== -->
+    <div class="admin-panel" id="panel-executives">
+      <div class="admin-panel-hdr">
+        <div class="hdr-title-flex">
+          <img src="logo.jpeg" class="panel-hdr-logo" alt="NESAAU Logo">
+          
+          <div class="hdr-text-group">
+            <h2>Leadership Council</h2>
+            <span class="panel-subtitle">Manage the current executive profile. Changes reflect live on the website.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add new exec form -->
+      <div class="admin-create-card">
+        <h3>Add New Executive</h3>
+        <div class="form-row">
+          <label>Full Name</label>
+          <input type="text" id="newExecName" placeholder="e.g. Adebayo Segun Mayowa"/>
+        </div>
+        <div class="form-row">
+          <label>Role / Position</label>
+          <input type="text" id="newExecRole" placeholder="e.g. President"/>
+        </div>
+        <div class="form-row">
+          <label>Level</label>
+          <select id="newExecLevel">
+            <option value="100">100 Level</option>
+            <option value="200">200 Level</option>
+            <option value="300">300 Level</option>
+            <option value="400" selected>400 Level</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>Photo</label>
+          <input type="file" id="newExecPhoto" accept="image/*"/>
+        </div>
+        <button class="btn-admin-action" onclick="addCurrentExec()">+ Add Executive</button>
+        <div class="admin-form-msg" id="addExecMsg"></div>
+      </div>
+
+      <!-- Current exec list -->
+      <div class="admin-list" id="currentExecList">
+        <div class="loading-state">Loading executives...</div>
+      </div>
+    </div>
+
+    <!-- ===== PANEL: PAST ADMINISTRATIONS ===== -->
+    <div class="admin-panel" id="panel-pastadmins">
+      <div class="admin-panel-hdr">
+        <div class="hdr-title-flex">
+          <img src="logo.jpeg" class="panel-hdr-logo" alt="NESAAU Logo">
+          
+          <div class="hdr-text-group">
+            <h2>Administrative Archives</h2>
+            <span class="panel-subtitle">Manage historical records and initialize new academic sessions</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Archive action -->
+      <div class="admin-create-card">
+        <h3>Start New Administration</h3>
+        <p style="font-size:.85rem;color:var(--gray);margin-bottom:20px;">
+          When a new set of executives is elected, use this to archive the current executives as a past administration before adding the new ones. This is permanent.
+        </p>
+        <div class="form-row">
+          <label>Administration Name</label>
+          <input type="text" id="archiveName" placeholder="e.g. Adebayo Administration"/>
+        </div>
+        <div class="form-row">
+          <label>Session Year</label>
+          <input type="text" id="archiveYear" placeholder="e.g. 2025/2026"/>
+        </div>
+        <div class="archive-action-wrapper">
+          <button class="btn-archive-session" onclick="archiveCurrentExecs()">
+            <i class="fa-solid fa-box-archive"></i> Archive Current & Start New Session
+          </button>
+          <p class="action-hint">This will move all current executives to the "Past Administrations" records.</p>
+        </div>
+        <div class="admin-form-msg" id="archiveMsg"></div>
+      </div>
+
+      <!-- Past administrations list -->
+      <div class="admin-list" id="pastAdminAdminList">
+        <div class="loading-state">Loading past administrations...</div>
+      </div>
+    </div>
+
+    <!-- ===== PANEL: STATS ===== -->
+    <!-- NESAAU ADDITION: Live dashboard stats -->
+    <div class="admin-panel" id="panel-stats">
+      <div class="admin-panel-hdr">
+        <div class="hdr-title-flex">
+          <img src="logo.jpeg" class="panel-hdr-logo" alt="NESAAU Logo">
+          
+          <div class="hdr-text-group">
+            <h2>Financial Overview</h2>
+            <span class="panel-subtitle">Live analytics for the 2025/2026 academic session</span>
+          </div>
+        </div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-ico-wrapper">
+            <i class="fa-solid fa-users"></i>
+          </div>
+          <div class="stat-content">
+            <strong id="statTotal">0</strong>
+            <span>Total Members</span>
+          </div>
+        </div>
+
+        <div class="stat-card paid">
+          <div class="stat-ico-wrapper">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+          <div class="stat-content">
+            <strong id="statPaid">0</strong>
+            <span>Dues Paid</span>
+          </div>
+        </div>
+
+        <div class="stat-card pending">
+          <div class="stat-ico-wrapper">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+          </div>
+          <div class="stat-content">
+            <strong id="statPending">0</strong>
+            <span>Pending Review</span>
+          </div>
+        </div>
+
+        <div class="stat-card unpaid">
+          <div class="stat-ico-wrapper">
+            <i class="fa-solid fa-circle-xmark"></i>
+          </div>
+          <div class="stat-content">
+            <strong id="statUnpaid">0</strong>
+            <span>Not Yet Paid</span>
+          </div>
+        </div>
+      </div>
+        <div class="session-reset-container">
+          <div class="reset-header">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <h3>New Academic Session Reset</h3>
+          </div>
+          <p>Perform this action only at the start of a new academic year. This will bulk-update all member dues to <strong>"unpaid"</strong> for the 2025/2026 session. <em>Note: Member accounts and profiles will remain intact.</em></p>
+          
+          <button class="btn-reset-session" onclick="resetSession()">
+            <i class="fa-solid fa-rotate"></i> Initialize New Session
+          </button>
+        </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="admin.js"></script>
+</body>
+</html>

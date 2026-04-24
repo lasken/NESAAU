@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>NESAAU – Nigeria Economics Students Association, Adeleke University</title>
+  <link rel="icon" type="image/jpeg" href="logo.jpeg">
+  <link rel="apple-touch-icon" href="logo.jpeg">
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+</head>
+<body>
+
+<!-- =====================================================
+     LOGIN / REGISTER MODAL
+     ===================================================== -->
+<div class="auth-modal-overlay" id="authModalOverlay" onclick="closeAuthModal()"></div>
+<div class="auth-modal" id="authModal" aria-hidden="true">
+  <button class="auth-modal-close" onclick="closeAuthModal()">&#10005;</button>
+  <div class="auth-modal-logo">
+    <img src="logo.jpeg" alt="NESAAU Logo" class="nav-logo-img"/>
+    <div><strong>NESAAU</strong><small>Member Portal</small></div>
+  </div>
+  <div class="auth-tabs">
+    <button class="auth-tab active" onclick="switchAuthTab('login', this)">Login</button>
+    <button class="auth-tab" onclick="switchAuthTab('register', this)">Register</button>
+  </div>
+  <!-- Login Form -->
+  <div class="auth-form" id="authLogin">
+    <div class="form-row">
+      <label>Matriculation Number</label>
+      <input type="text" id="loginMatric" placeholder="22/0000" autocomplete="off"/>
+    </div>
+    <div class="form-row">
+      <label>Password</label>
+      <input type="password" id="loginPassword" placeholder="Your password"/>
+    </div>
+    <button class="btn-verify" onclick="loginStudent()">Login to My Account</button>
+    <div class="auth-msg" id="loginMsg"></div>
+  </div>
+  <!-- Register Form -->
+  <div class="auth-form hidden" id="authRegister">
+    <div class="form-row">
+      <label>Full Name</label>
+      <input type="text" id="regName" placeholder="As on your school ID"/>
+    </div>
+    <div class="form-row">
+      <label>Matriculation Number</label>
+      <input type="text" id="regMatric" placeholder="22/0000" autocomplete="off"/>
+    </div>
+    <div class="form-row">
+      <label>Current Level</label>
+      <select id="regLevel">
+        <option value="">-- Select Level --</option>
+        <option value="100">100 Level</option>
+        <option value="200">200 Level</option>
+        <option value="300">300 Level</option>
+        <option value="400">400 Level</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label>Password</label>
+      <input type="password" id="regPassword" placeholder="Create a password (min. 6 chars)"/>
+    </div>
+    <button class="btn-verify" onclick="registerStudent()">Create My Account</button>
+    <div class="auth-msg" id="registerMsg"></div>
+  </div>
+</div>
+
+<!-- =====================================================
+     TOAST POPUP (dues status + download gate messages)
+     ===================================================== -->
+<div class="toast-popup" id="toastPopup">
+  <span class="toast-icon" id="toastIcon">&#10060;</span>
+  <div class="toast-msg" id="toastMsg">Dues Not Paid</div>
+  <button class="toast-close" onclick="closeToast()">&#10005;</button>
+</div>
+
+<!-- OVERLAY (sidebar backdrop) -->
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<!-- =====================================================
+     SIDEBAR
+     ===================================================== -->
+<aside class="sidebar" id="sidebar" aria-hidden="true">
+  <button class="sidebar-close" onclick="closeSidebar()" aria-label="Close">&#10005;</button>
+  <div class="sidebar-brand">
+    <img src="logo.jpeg" alt="NESAAU Logo" class="sb-logo-img"/>
+    <div>
+      <strong>NESAAU</strong>
+      <small>Adeleke University, Ede</small>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="#home"         onclick="closeSidebar()"><span>01</span> Home</a>
+    <a href="#about"        onclick="closeSidebar()"><span>02</span> About Us</a>
+    <a href="#executives"   onclick="closeSidebar()"><span>03</span> Executives</a>
+    <a href="#academics"    onclick="closeSidebar()"><span>04</span> Academics</a>
+    <a href="#constitution" onclick="closeSidebar()"><span>05</span> Constitution</a>
+    <a href="#dues"         onclick="closeSidebar()" class="sb-dues-link">Pay Dues</a>
+  </nav>
+  <div class="sidebar-footer">
+    <p>&#169; 2025 NESAAU. All rights reserved.</p>
+  </div>
+</aside>
+
+<!-- Student bar (legacy — kept safe, hidden by auth.js) -->
+<div class="student-bar" id="studentBar" style="display:none;">
+  <div class="container student-bar-inner">
+    <div class="student-bar-left">
+      <span class="student-bar-avatar" id="studentAvatar">--</span>
+      <div>
+        <strong id="studentBarName">Loading...</strong>
+        <small id="studentBarMatric"></small>
+      </div>
+    </div>
+    <div class="student-bar-center">
+      <span class="dues-status-pill" id="duesStatusPill">&#9203; Checking status...</span>
+    </div>
+    <div class="student-bar-right">
+      <a href="#dues" class="student-bar-link">My Dues</a>
+      <button class="student-bar-logout" onclick="logoutStudent()">Logout</button>
+    </div>
+  </div>
+</div>
+
+<!-- ANNOUNCEMENT BAR -->
+<div class="announce-bar">
+  <div class="container announce-inner">
+    <span class="announce-pill">NOTICE</span>
+    <span>Dues payment for 2025/2026 academic session is NOW OPEN. Pay before exam clearance.</span>
+    <a href="#dues">Pay Now &rarr;</a>
+  </div>
+</div>
+
+<!-- =====================================================
+     NAVBAR
+     ===================================================== -->
+<header class="navbar" id="navbar">
+  <div class="container nav-inner">
+
+    <!-- Logged out: logo -->
+    <a href="#home" class="nav-brand" id="navBrand">
+      <img src="logo.jpeg" alt="NESAAU Logo" class="nav-logo-img"/>
+      <div class="nav-brand-text">
+        <strong>NESAAU</strong>
+        <small>Adeleke University</small>
+      </div>
+    </a>
+
+    <!-- Logged in: student info replaces logo -->
+    <div class="nav-student-info" id="navStudentInfo" style="display:none;">
+      <div class="nav-student-avatar" id="navStudentAvatar">--</div>
+      <div class="nav-brand-text">
+        <strong id="navStudentName"></strong>
+        <small id="navStudentSub"></small>
+      </div>
+    </div>
+
+    <nav class="nav-links" id="navLinks">
+      <a href="#home"         class="nav-link">Home</a>
+      <a href="#about"        class="nav-link">About</a>
+      <a href="#executives"   class="nav-link">Executives</a>
+      <a href="#academics"    class="nav-link">Academics</a>
+      <a href="#constitution" class="nav-link">Constitution</a>
+    </nav>
+
+    <div class="nav-auth-btns">
+      <!-- Logged out state -->
+      <button class="btn-login-nav" id="navLoginBtn" onclick="openAuthModal()">Login</button>
+      <a href="#dues" class="btn-dues-nav" id="navDuesBtn">Pay Dues</a>
+      <!-- Logged in state — hidden by default -->
+      <a href="#dues" class="btn-dues-nav" id="navMyDuesBtn" style="display:none;">My Dues</a>
+      <button class="student-bar-logout" id="navLogoutBtn" onclick="logoutStudent()" style="display:none;">Logout</button>
+    </div>
+
+    <button class="hamburger" id="hamburger" onclick="openSidebar()" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<!-- =====================================================
+     HERO
+     ===================================================== -->
+<section class="hero" id="home">
+  <div class="hero-bg" style="background-image:url('nesa.jpeg')"></div>
+  <div class="hero-overlay"></div>
+  <div class="container hero-inner">
+    <div class="hero-content">
+      <div class="hero-badge">&#127963; Est. 2018 &nbsp;&bull;&nbsp; Adeleke University, Ede &nbsp;&bull;&nbsp; Osun State, Nigeria</div>
+      <h1 class="hero-title">
+        Empowering<br/>
+        <span class="hero-gold">Future Economists</span>
+      </h1>
+      <p class="hero-desc">
+        The official departmental association of Economics students at Adeleke University,
+        championing academic excellence, student welfare, and professional development.
+      </p>
+      <div class="hero-actions">
+        <a href="#about" class="btn-primary">Discover NESAAU</a>
+        <a href="#dues"  class="btn-outline-hero">Pay Your Dues</a>
+      </div>
+      <div class="hero-stats">
+        <div class="hstat"><strong>50+</strong><span>Members</span></div>
+        <div class="hstat-div"></div>
+        <div class="hstat"><strong>13</strong><span>Executives</span></div>
+        <div class="hstat-div"></div>
+        <div class="hstat"><strong>3+</strong><span>Levels</span></div>
+        <div class="hstat-div"></div>
+        <div class="hstat"><strong>6+</strong><span>Events/Year</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <span>Scroll</span>
+    <div class="scroll-bar"></div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-tag">LATEST</div>
+    <div class="ticker-track">
+      <div class="ticker-inner" id="tickerInner">
+        <span><i class="fa-solid fa-bullhorn"></i> Welcome to NESAAU 2025/2026 Academic Session!</span>
+        <span class="sep">|</span>
+        <span><i class="fa-solid fa-credit-card"></i> Dues payment portal is now open — pay before exam clearance</span>
+        <span class="sep">|</span>
+        <span><i class="fa-solid fa-graduation-cap"></i> New past questions for 300L are now available in Academics</span>
+        <span class="sep">|</span>
+        <span><i class="fa-solid fa-award"></i> Congratulations to the newly inaugurated NESAAU Executives!</span>
+        
+        <span class="sep">|</span>
+        <span><i class="fa-solid fa-bullhorn"></i> Welcome to NESAAU 2025/2026 Academic Session!</span>
+        <span class="sep">|</span>
+        <span><i class="fa-solid fa-credit-card"></i> Dues payment portal is now open — pay before exam clearance</span>
+        <span class="sep">|</span>
+        <span><i class="fa-solid fa-graduation-cap"></i> New past questions for 300L are now available in Academics</span>
+        <span class="sep">|</span>
+        <span><i class="fa-solid fa-award"></i> Congratulations to the newly inaugurated NESAAU Executives!</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =====================================================
+     ABOUT
+     ===================================================== -->
+<section class="section" id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-img-col">
+        <div class="about-img-frame">
+          <img src="nesa.jpeg" alt="NESAAU students at a campus event" loading="lazy" onerror="this.style.display='none'"/>
+          <div class="about-float-tag">
+            <span class="tag-icon">
+              <i class="fa-solid fa-graduation-cap"></i>
+            </span>
+            <div class="tag-content">
+              <strong>Academic-First</strong>
+              <small>Notes & Resources</small>
+            </div>
+          </div>
+        </div>
+        <div class="about-year-pill">Est. <strong>2018</strong></div>
+      </div>
+      <div class="about-text-col">
+        <div class="section-label">Who We Are</div>
+        <h2 class="section-title">About <span class="gold">NESAAU</span></h2>
+        <p>The <strong>Nigeria Economics Students Association, Adeleke University Chapter (NESAAU)</strong> is the official departmental body representing all Economics students at Adeleke University, Ede, Osun State, Nigeria.</p>
+        <p>We bridge the gap between theory and practice, organising seminars, providing academic resources, and fostering leadership that prepares members for life beyond the lecture hall.</p>
+        <div class="pillars">
+          <div class="pillar">
+            <span class="pillar-ico">
+              <i class="fa-solid fa-bullseye"></i>
+            </span>
+            <div>
+              <strong>Our Mission</strong>
+              <p>To promote academic excellence, professional development, and student welfare.</p>
+            </div>
+          </div>
+          <div class="pillar">
+            <span class="pillar-ico">
+              <i class="fa-solid fa-earth-africa"></i>
+            </span>
+            <div>
+              <strong>Our Vision</strong>
+              <p>To be the most impactful departmental association in Adeleke University.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     PRESIDENT MESSAGE
+     ===================================================== -->
+<section class="section pres-section" id="president">
+  <div class="pres-bg"></div>
+  <div class="container">
+    <div class="section-label tc">Leadership</div>
+    <h2 class="section-title tc">Message from the <span class="gold">President</span></h2>
+    <div class="pres-card">
+      <div class="pres-left">
+        <div class="pres-img-wrap">
+          <img src="PRES.jpeg" alt="NESAAU President" loading="lazy" onerror="this.style.background='#1a3a6b'"/>
+        </div>
+        <h3 class="pres-name">Adebayo Segun Mayowa</h3>
+        <span class="pres-role-tag">President, NESAAU 2025/2026</span>
+        <div class="pres-socials">
+          <a href="#" aria-label="X (Twitter)"><i class="fa-brands fa-x-twitter"></i></a>
+          <a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+          <a href="#" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+        </div>
+      </div>
+      <div class="pres-right">
+        <div class="big-quote">&ldquo;</div>
+        <p class="pres-salute">Dear Fellow Economists and Esteemed Members of NESAAU,</p>
+        <p>It is with great honour and an immense sense of responsibility that I address you as President for the 2025/2026 academic session. This journey is not mine alone, it belongs to every passionate, dues-paying member of this great association.</p>
+        <p>Our administration is committed to three core promises: <strong>academic empowerment</strong> through quality materials and events, <strong>welfare excellence</strong> by amplifying every member's voice, and <strong>legacy building</strong> projects that will outlive this tenure.</p>
+        <p>The NESAAU constitution is our foundation. I urge every member to familiarise themselves with it and hold your executives accountable to its provisions. An informed member is NESAAU's greatest strength.</p>
+        <p class="pres-closing">Together, we shall leave NESAAU better than we found it.<br/>Long live NESAAU. Long live Adeleke University. &#127891;</p>
+        <div class="pres-sig">— Adebayo Segun Mayowa &nbsp;|&nbsp; NESAAU President 2025/2026</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     EXECUTIVES
+     ===================================================== -->
+<section class="section" id="executives">
+  <div class="container">
+    <div class="section-label tc">Leadership Team</div>
+    <h2 class="section-title tc">Meet Our <span class="gold">Executives</span></h2>
+    <p class="section-sub tc">The dedicated student leaders driving NESAAU's vision for 2025/2026.</p>
+    <div class="exec-grid">
+      <div class="exec-card exec-featured">
+        <div class="exec-img-wrap">
+          <img src="PRES.jpeg" alt="President" loading="lazy" onerror="this.style.background='#1a3a6b'"/>
+          <div class="exec-badge">President</div>
+        </div>
+        <h3>Adebayo Mayowa</h3>
+        <span>400 Level &bull; Economics</span>
+      </div>
+      <div class="exec-card">
+        <div class="exec-img-wrap">
+          <img src="VP.jpeg" alt="Vice President" loading="lazy" onerror="this.style.background='#1a3a6b'"/>
+          <div class="exec-badge">Vice President</div>
+        </div>
+        <h3>Sunday Alexis</h3>
+        <span>400 Level &bull; Economics</span>
+      </div>
+      <div class="exec-card">
+        <div class="exec-img-wrap">
+          <img src="GEN SEC.jpeg" alt="General Secretary" loading="lazy" onerror="this.style.background='#1a3a6b'"/>
+          <div class="exec-badge">Gen. Secretary</div>
+        </div>
+        <h3>Samuel Emmanuella</h3>
+        <span>300 Level &bull; Economics</span>
+      </div>
+      <div class="exec-card">
+        <div class="exec-img-wrap">
+          <img src="FIN SEC.jpeg" alt="Financial Secretary" loading="lazy" onerror="this.style.background='#1a3a6b'"/>
+          <div class="exec-badge">Financial Sec.</div>
+        </div>
+        <h3>Bamigboye Marvel</h3>
+        <span>300 Level &bull; Economics</span>
+      </div>
+      <div class="exec-card">
+        <div class="exec-img-wrap">
+          <img src="SOCI.jpeg" alt="Social Director" loading="lazy" onerror="this.style.background='#1a3a6b'"/>
+          <div class="exec-badge">Social Director</div>
+        </div>
+        <h3>Akinola Samuel</h3>
+        <span>300 Level &bull; Economics</span>
+      </div>
+      <div class="exec-card">
+        <div class="exec-img-wrap">
+          <img src="PRO.jpeg" alt="P.R.O." loading="lazy" onerror="this.style.background='#1a3a6b'"/>
+          <div class="exec-badge">P.R.O.</div>
+        </div>
+        <h3>Kinosi Victor</h3>
+        <span>400 Level &bull; Economics</span>
+      </div>
+      <div class="exec-card">
+        <div class="exec-img-wrap">
+          <img src="TREAS.jpeg" alt="Treasurer" loading="lazy" onerror="this.style.background='#1a3a6b'"/>
+          <div class="exec-badge">Treasurer</div>
+        </div>
+        <h3>Lasisi Ayokunmi</h3>
+        <span>400 Level &bull; Economics</span>
+      </div>
+      <div class="exec-card exec-featured">
+        <div class="exec-img-wrap">
+          <img src="WEL.jpeg" alt="Welfare Director" loading="lazy" onerror="this.style.background='#1a3a6b'"/>
+          <div class="exec-badge">Welfare Director</div>
+        </div>
+        <h3>Olayiwola Sarah</h3>
+        <span>300 Level &bull; Economics</span>
+      </div>
+      <div class="exec-card exec-featured">
+        <div class="exec-img-wrap">
+          <img src="ACAD.jpeg" alt="Academic Director" loading="lazy" onerror="this.style.background='#1a3a6b'"/>
+          <div class="exec-badge">Academic Director</div>
+        </div>
+        <h3>Fanowopo Daniella</h3>
+        <span>400 Level &bull; Economics</span>
+      </div>
+      <div class="exec-card exec-featured">
+        <div class="exec-img-wrap">
+          <img src="SPORT.jpeg" alt="Sport Director" loading="lazy" onerror="this.style.background='#1a3a6b'"/>
+          <div class="exec-badge">Sport Director</div>
+        </div>
+        <h3>Okpara Christian</h3>
+        <span>400 Level &bull; Economics</span>
+      </div>
+      <div class="exec-card exec-featured">
+        <div class="exec-img-wrap">
+          <img src="sente.jpeg" alt="Senate President" loading="lazy" onerror="this.style.background='#1a3a6b'"/>
+          <div class="exec-badge">Senate President</div>
+        </div>
+        <h3>Ayodele Stephen</h3>
+        <span>400 Level &bull; Economics</span>
+      </div>
+      <div class="exec-card exec-featured">
+        <div class="exec-img-wrap">
+          <img src="dept pres.jpeg" alt="Deputy Senate President" loading="lazy" onerror="this.style.background='#1a3a6b'"/>
+          <div class="exec-badge">Deputy Senate President</div>
+        </div>
+        <h3>Olalekan Adeola</h3>
+        <span>300 Level &bull; Economics</span>
+      </div>
+      <div class="exec-card exec-featured">
+        <div class="exec-img-wrap">
+          <img src="chief.jpeg" alt="Chief Whip" loading="lazy" onerror="this.style.background='#1a3a6b'"/>
+          <div class="exec-badge">Chief Whip</div>
+        </div>
+        <h3>Onyegbule Success</h3>
+        <span>300 Level &bull; Economics</span>
+</div><!-- end exec-grid -->
+
+    <!-- =====================================================
+         PAST ADMINISTRATIONS — loaded dynamically from Supabase
+         ===================================================== -->
+        <div class="past-admin-wrap">
+          <div class="past-admin-topbar">
+            <span class="past-admin-count" id="pastAdminCount"></span>
+            <a class="past-admin-link" id="pastToggleBtn" onclick="togglePastAdmins()" href="#">
+              View Past Administrations <span class="past-toggle-arrow" id="pastArrow">&#8599;</span>
+            </a>
+          </div>
+          
+          <div class="past-admin-panel" id="pastAdminPanel" style="display:none;">
+            <div class="past-admin-list" id="pastAdminList">
+              <div class="past-loading">&#9203; Loading past administrations...</div>
+            </div>
+          </div>
+        </div>
+
+          </div>
+        </section>
+
+<!-- =====================================================
+     ACADEMICS — DOWNLOAD GATE ACTIVE ON ALL .res-dl LINKS
+     Not logged in  → login modal opens automatically
+     Logged in + unpaid → toast: pay dues
+     Logged in + paid   → download proceeds normally
+     ===================================================== -->
+<section class="section academics-bg" id="academics">
+  <div class="container">
+    <div class="section-label tc">Academic Hub</div>
+    <h2 class="section-title tc">Notes &amp; <span class="gold">Past Questions</span></h2>
+    <p class="section-sub tc">Download curated study materials for all levels. Updated every semester.</p>
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('l100',this)">100 Level</button>
+      <button class="tab-btn" onclick="switchTab('l200',this)">200 Level</button>
+      <button class="tab-btn" onclick="switchTab('l300',this)">300 Level</button>
+      <button class="tab-btn" onclick="switchTab('l400',this)">400 Level</button>
+    </div>
+
+    <!-- 100 LEVEL -->
+    <div class="resource-panel active" id="l100">
+      <div class="res-list">
+        <div class="res-row">
+          <div class="res-ico">&#128196;</div>
+          <div class="res-meta">
+            <strong>1st Semester – First semester PQ</strong>
+            <span>First semester PQ &bull; PDF &bull; 1.2 MB</span>
+          </div>
+          <a href="#" class="res-dl" onclick="handleDownload(event,'#')">&#11015; Download</a>
+        </div>
+        <div class="res-row">
+          <div class="res-ico">&#128196;</div>
+          <div class="res-meta">
+            <strong>2nd Semester – Second semester PQ</strong>
+            <span>Second semester PQ &bull; PDF &bull; 3.4 MB</span>
+          </div>
+          <a href="#" class="res-dl" onclick="handleDownload(event,'#')">&#11015; Download</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 200 LEVEL -->
+    <div class="resource-panel" id="l200">
+      <div class="res-list">
+        <div class="res-row">
+          <div class="res-ico">&#128196;</div>
+          <div class="res-meta">
+            <strong>1st Semester – First semester PQ</strong>
+            <span>First semester PQ &bull; PDF &bull; 1.8 MB</span>
+          </div>
+          <a href="#" class="res-dl" onclick="handleDownload(event,'#')">&#11015; Download</a>
+        </div>
+        <div class="res-row">
+          <div class="res-ico">&#128196;</div>
+          <div class="res-meta">
+            <strong>2nd Semester – Second semester PQ</strong>
+            <span>Second semester PQ &bull; PDF &bull; 4.2 MB</span>
+          </div>
+          <a href="#" class="res-dl" onclick="handleDownload(event,'#')">&#11015; Download</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 300 LEVEL -->
+    <div class="resource-panel" id="l300">
+      <div class="res-list">
+        <div class="res-row">
+          <div class="res-ico">&#128196;</div>
+          <div class="res-meta">
+            <strong>1st Semester – First semester PQ</strong>
+            <span>First semester PQ &bull; PDF &bull; 803 KB</span>
+          </div>
+          <a href="#" class="res-dl" onclick="handleDownload(event,'300lv 1st PQ.pdf')">&#11015; Download</a>
+        </div>
+        <div class="res-row">
+          <div class="res-ico">&#128196;</div>
+          <div class="res-meta">
+            <strong>2nd Semester – Second semester PQ</strong>
+            <span>Second semester PQ &bull; PDF &bull; 608 KB</span>
+          </div>
+          <a href="#" class="res-dl" onclick="handleDownload(event,'300lv 2nd PQ.pdf')">&#11015; Download</a>
+        </div>
+        <div class="res-row">
+          <div class="res-ico">&#128196;</div>
+          <div class="res-meta">
+            <strong>ECO 342 – Econometrics</strong>
+            <span>OLS Estimator Solution &bull; PDF &bull; 1.1 MB</span>
+          </div>
+          <a href="#" class="res-dl" onclick="handleDownload(event,'#')">&#11015; Download</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 400 LEVEL -->
+    <div class="resource-panel" id="l400">
+      <div class="res-list">
+        <div class="res-row">
+          <div class="res-ico">&#128196;</div>
+          <div class="res-meta">
+            <strong>1st Semester – First semester PQ</strong>
+            <span>First semester PQ &bull; PDF &bull; 803 KB</span>
+          </div>
+          <a href="#" class="res-dl" onclick="handleDownload(event,'400 FIRST level PQ complete.pdf')">&#11015; Download</a>
+        </div>
+        <div class="res-row">
+          <div class="res-ico">&#128196;</div>
+          <div class="res-meta">
+            <strong>2nd Semester – Second semester PQ</strong>
+            <span>Second semester PQ &bull; PDF &bull; 608 KB</span>
+          </div>
+          <a href="#" class="res-dl" onclick="handleDownload(event,'400lvl 2nd PQ.pdf')">&#11015; Download</a>
+        </div>
+        <div class="res-row">
+          <div class="res-ico">&#128196;</div>
+          <div class="res-meta">
+            <strong>Econometrics – OLS &amp; GLS</strong>
+            <span>OLS and GLS Simplified Solutions &bull; PDF &bull; 1.1 MB</span>
+          </div>
+          <a href="#" class="res-dl" onclick="handleDownload(event,'OLS & GLS simplified solutions.pdf')">&#11015; Download</a>
+        </div>
+      </div>
+    </div>
+
+    <p class="res-note">&#9888;&#65039; Login and pay your dues to unlock all downloadable materials.</p>
+  </div>
+</section>
+
+<!-- =====================================================
+     CONSTITUTION
+     ===================================================== -->
+<section class="section" id="constitution">
+  <div class="container">
+    <div class="section-label tc">Governance</div>
+    <h2 class="section-title tc">NESAAU <span class="gold">Constitution</span></h2>
+    <p class="section-sub tc">The governing document of our association. Every member is expected to know their rights and responsibilities.</p>
+    <div class="const-card">
+      <div class="const-left">
+        <div class="const-scroll-icon">&#128220;</div>
+        <div class="const-info">
+          <h3>NESAAU Constitution</h3>
+          <span>Version 2.0 &bull; Ratified 2023 &bull; PDF &bull; 1.4 MB</span>
+          <p>Covers membership rights, election procedures, dues policy, disciplinary processes, and the responsibilities of all members and executives.</p>
+          <div class="const-chips">
+            <span>Membership</span><span>Elections</span><span>Dues Policy</span><span>Discipline</span><span>Welfare</span>
+          </div>
+        </div>
+      </div>
+      <div class="const-right">
+        <button class="btn-read-const" onclick="toggleConstitution()">
+          <i class="fa-solid fa-book-open"></i> Read Online
+        </button>
+        <a href="NESA1 🇳🇬-5.pdf" target="_blank" class="btn-dl-const">
+          <i class="fa-solid fa-file-pdf"></i> Download PDF
+        </a>
+      </div>
+    </div>
+    <div class="const-reader" id="constReader">
+    <div class="const-reader-hdr">
+      <strong><i class="fa-solid fa-scroll"></i> NESAAU Constitution — Preview</strong>
+      <button onclick="toggleConstitution()">
+        <i class="fa-solid fa-xmark"></i> Close
+      </button>
+    </div>
+      <div class="const-reader-body">
+        <h2>NESAAU CONSTITUTION</h2>
+        <h4>PREAMBLE</h4>
+        <p>We, the students of the Department of Economics, Adeleke University, solemnly resolve to strengthen unity and commitment to promoting academic excellence, mutual growth, and general welfare[cite: 9]. We establish this Constitution for effective governance and progress, recognizing the importance of collaboration and educational resources within and beyond our institution[cite: 10].</p>
+        
+        <h4>ARTICLE 1 — NAME &amp; IDENTITY</h4>
+        <p>This body shall be known and addressed as the <strong>Nigerian Economics Students' Association Adeleke University (NESAAU)</strong>[cite: 31, 34]. This Constitution is supreme, and its provisions are binding on all members, subject to the regulations of Adeleke University and the Federal Republic of Nigeria[cite: 36]. Members of this Association are officially addressed as <strong>"NESITES"</strong>[cite: 39].</p>
+        
+        <h4>ARTICLE 2 — MEMBERSHIP</h4>
+        <p>Membership is composed of all students in the Department of Economics who are duly registered through the payment of session dues[cite: 189]. Registered members have the right to use Association facilities, wear official merchandise, vote and be voted for in approved elections, and obtain a copy of this Constitution[cite: 191, 192, 194].</p>
+        
+        <h4>ARTICLE 3 — DUES &amp; FINANCES</h4>
+        <p>An agreed annual sum of <strong>₦2,000</strong> must be paid by registered chapters to the Treasurer for the efficient running of the Association, while the executive body pays ₦2,500[cite: 218]. Dues amounts are approved by the Executive Council in consultation with the Senate[cite: 197]. Financial standing is required for members to access academic and social criteria privileges[cite: 226].</p>
+        
+        <h4>ARTICLE 4 — ELECTIONS</h4>
+        <p>Elections are conducted annually by an Electoral Commission composed of student representatives from each level[cite: 219, 221, 237]. Aspirants for President, Vice President, and Secretary General must maintain at least a <strong>3.5 CGPA</strong>[cite: 227]. Voting is conducted via a simple open-secret ballot system, and candidates are elected by a simple majority[cite: 229, 231].</p>
+        
+        <h4>ARTICLE 5 — CODE OF CONDUCT</h4>
+        <p>Offences include breaches of the Constitution, fraudulent practices, disclosure of confidential matters, and acting in a manner that brings the Association into disrepute[cite: 241, 242, 243, 244]. Sanctions range from caution and restitution to suspension from office or the Association, depending on the seriousness of the offence[cite: 253].</p>
+        
+        <h4>ARTICLE 6 — AMENDMENTS</h4>
+        <p>This Constitution is subject to amendment upon a resolution passed by a <strong>two-thirds (2/3) majority</strong> of the Senate House[cite: 273]. Amendments must be reviewed during a formally constituted meeting and must not contradict the fundamental objectives outlined in the preamble[cite: 274, 275]. Approved amendments are disseminated to all members and the executive arm[cite: 276].</p>
+        
+        <p class="const-note"><em>This is a preview. Download the full PDF for the complete constitution.</em></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     DUES PORTAL
+     ===================================================== -->
+<section class="section dues-section" id="dues">
+  <div class="dues-bg"></div>
+  <div class="container">
+    <div class="section-label tc" style="color:var(--gold)">Dues Payment</div>
+    <h2 class="section-title tc" style="color:#fff">Pay Your <span class="gold">Dues</span></h2>
+    <p class="section-sub tc" style="color:rgba(255,255,255,.7)">Login to access the dues payment portal. Dues unlock all member benefits including exam clearance.</p>
+
+    <!-- Gate: shown when NOT logged in -->
+    <div class="dues-login-gate" id="duesLoginGate">
+      <div class="gate-card">
+        <span class="gate-icon"><i class="fa-solid fa-lock"></i></span>
+        <h3>Login Required</h3>
+        <p>You need to be logged in to access the dues payment portal.</p>
+        <button class="btn-verify" onclick="openAuthModal()">
+          <i class="fa-solid fa-right-to-bracket"></i> Login / Register
+        </button>
+      </div>
+    </div>
+
+    <!-- Portal: shown when logged in -->
+    <div id="duesPortalWrap">
+      <div class="dues-layout">
+        <div class="dues-portal">
+
+          <!-- Steps indicator -->
+          <div class="steps-bar">
+            <div class="step-item active" id="stepItem1"><div class="step-circle">1</div><span>Verify</span></div>
+            <div class="step-connector"></div>
+            <div class="step-item" id="stepItem2"><div class="step-circle">2</div><span>Pay</span></div>
+            <div class="step-connector"></div>
+            <div class="step-item" id="stepItem3"><div class="step-circle">3</div><span>Confirm</span></div>
+          </div>
+
+          <!-- Step 1: Verify -->
+          <div class="dues-panel" id="duesStep1">
+            <div class="dues-panel-hdr">
+            <span class="dp-icon">
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </span>
+            <div>
+              <h3>Verify Your Identity</h3>
+              <p>Confirm your details before proceeding to payment.</p>
+            </div>
+          </div>
+            <div class="dues-form">
+              <div class="form-row">
+                <label>Matriculation Number</label>
+                <input type="text" id="matricInput" placeholder="e.g. 22/0000" maxlength="7" autocomplete="off"/>
+                <span class="form-hint">Format: YY/NNNN</span>
+              </div>
+              <div class="form-row">
+                <label>Full Name</label>
+                <input type="text" id="nameInput" placeholder="As it appears on your school ID" autocomplete="off"/>
+              </div>
+              <div class="form-row">
+                <label>Current Level</label>
+                <select id="levelSel">
+                  <option value="">-- Select Your Level --</option>
+                  <option value="100">100 Level</option>
+                  <option value="200">200 Level</option>
+                  <option value="300">300 Level</option>
+                  <option value="400">400 Level</option>
+                </select>
+              </div>
+              <button class="btn-verify" onclick="verifyStudent()"><i class="fa-solid fa-magnifying-glass"></i> Verify & Continue</button>
+              <div class="verify-msg" id="verifyMsg"></div>
+            </div>
+          </div>
+
+          <!-- Step 2: Payment -->
+          <div class="dues-panel hidden" id="duesStep2">
+            <div class="dues-panel-hdr">
+              <span class="dp-icon"><i class="fa-solid fa-credit-card"></i></span>
+              <div>
+                <h3>Payment Details</h3>
+                <p>Transfer to the account below, then upload your receipt.</p>
+              </div>
+            </div>
+
+            <div class="verified-info-bar" id="verifiedBar"></div>
+
+            <div class="payment-card">
+              <div class="payment-amt">
+                <span>Dues Amount (2025/2026 Session)</span>
+                <strong>₦2,000</strong>
+              </div>
+              <div class="bank-detail-grid">
+                <div class="brow"><span>Bank</span><strong>Kuda</strong></div>
+                <div class="brow"><span>Account Name</span><strong>NESAAU Adeleke University</strong></div>
+                <div class="brow"><span>Account Number</span><strong>2071584018</strong><button class="copy-btn" onclick="copyAcct()">Copy</button></div>
+                <div class="brow"><span>Narration</span><strong>NESAAU DUES – [Your Matric No.]</strong></div>
+              </div>
+                <p class="pay-note">
+                  <i class="fa-solid fa-triangle-exclamation"></i> 
+                  Always include your <strong>matric number in the narration</strong>, then upload your receipt below.
+                </p>
+            </div>
+            <div class="form-row">
+              <label>Upload Receipt (Screenshot or PDF)</label>
+              <input type="file" id="receiptFile" accept="image/*,.pdf"/>
+            </div>
+          <div class="pay-btns">
+            <button class="btn-verify" onclick="submitPayment()">
+              <i class="fa-solid fa-cloud-arrow-up"></i> Submit Receipt
+            </button>
+            <button class="btn-back" onclick="backToStep1()">
+              <i class="fa-solid fa-arrow-left"></i> Go Back
+            </button>
+          </div>
+          <div class="verify-msg" id="payMsg"></div>
+          </div>
+
+          <!-- Step 3: Confirmation -->
+          <div class="dues-panel hidden success-panel" id="duesStep3">
+            <div class="success-ani">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h3>Payment Submitted Successfully!</h3>
+            <p>Your receipt has been received. Our Treasurer will verify and confirm within <strong>24–48 hours</strong>.</p>
+            <p>Thank you for being a responsible NESAAU member!</p>
+            <button class="btn-verify" onclick="resetDues()">Make Another Payment</button>
+          </div>
+
+        </div><!-- end dues-portal -->
+
+        <!-- Benefits sidebar -->
+        <div class="dues-benefits">
+          <h4><i class="fa-solid fa-gift"></i> Member Benefits</h4>
+          <p>Paying your dues gives you access to all NESAAU services for the 2025/2026 session.</p>
+  
+          <ul class="benefits-list">
+            <li><i class="fa-solid fa-circle-check"></i> All past questions &amp; lecture notes</li>
+            <li><i class="fa-solid fa-circle-check"></i> Voting rights at general assembly</li>
+            <li><i class="fa-solid fa-circle-check"></i> Exam clearance endorsement letter</li>
+            <li><i class="fa-solid fa-circle-check"></i> NESAAU events &amp; seminar access</li>
+            <li><i class="fa-solid fa-circle-check"></i> Student welfare support &amp; assistance</li>
+            <li><i class="fa-solid fa-circle-check"></i> Membership certificate (on request)</li>
+            <li><i class="fa-solid fa-circle-check"></i> Access to departmental WhatsApp group</li>
+          </ul>
+
+          <div class="dues-contact">
+            <strong><i class="fa-solid fa-phone-volume"></i> Contact Treasurer</strong>
+            <a href="tel:+2348159718496">+234 815 971 8496</a>
+          </div>
+        </div>
+
+      </div><!-- end dues-layout -->
+    </div><!-- end duesPortalWrap -->
+  </div>
+</section>
+
+<!-- =====================================================
+     PERSONNEL OF THE WEEK
+     Populated dynamically from Supabase by admin
+     ===================================================== -->
+<section class="section spotlight-section" id="spotlight">
+  <div class="container">
+    <div class="section-label tc">Featured This Week</div>
+    <h2 class="section-title tc">NESAAU <span class="gold">Personnel of the Week</span></h2>
+    <p class="section-sub tc">Every week we spotlight a standout NESAAU member, their skills, achievements, and how to connect with them.</p>
+
+    <!-- Spotlight card — filled by JS -->
+    <div id="spotlightWrap">
+      <div class="spotlight-loading-container">
+        <div class="spotlight-spinner"></div>
+        <p>Curating this week's executive spotlight...</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     ANNOUNCEMENTS SECTION
+     Populated dynamically from Supabase by admin
+     ===================================================== -->
+<section class="section announcements-section" id="announcements">
+  <div class="container">
+    <div class="section-label tc">Stay Updated</div>
+    <h2 class="section-title tc">Announcements &amp; <span class="gold">Events</span></h2>
+    <p class="section-sub tc">Official notices from the NESAAU executive team. Check back regularly.</p>
+
+    <!-- Filter tabs -->
+    <div class="ann-filter-bar">
+      <button class="ann-filter-btn active" onclick="filterAnnouncements('all', this)">
+        All
+      </button>
+      <button class="ann-filter-btn" onclick="filterAnnouncements('Seminar', this)">
+        <i class="fa-solid fa-graduation-cap"></i> Seminars
+      </button>
+      <button class="ann-filter-btn" onclick="filterAnnouncements('Election', this)">
+        <i class="fa-solid fa-check-to-slot"></i> Elections
+      </button>
+      <button class="ann-filter-btn" onclick="filterAnnouncements('Meeting', this)">
+        <i class="fa-solid fa-users-rectangle"></i> Meetings
+      </button>
+      <button class="ann-filter-btn" onclick="filterAnnouncements('General', this)">
+        <i class="fa-solid fa-bullhorn"></i> General
+      </button>
+    </div>
+
+    <!-- Announcement cards — filled by JS -->
+    <div class="ann-grid" id="annGrid">
+      <div class="ann-loading-container">
+        <div class="nesa-spinner"></div>
+        <span class="loading-text">Synchronizing Announcements...</span>
+      </div>
+    </div>
+
+    <!-- Empty state — shown when no announcements -->
+    <div class="ann-empty" id="annEmpty" style="display:none;">
+      <div class="empty-state-content">
+        <div class="empty-icon-wrapper">
+          <i class="fa-solid fa-envelopes-bulk"></i>
+        </div>
+        <h3>Desk is Clear</h3>
+        <p>There are no announcements in this category at the moment. Check back soon for official updates.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     COMMUNITY REQUEST FORM
+     Students send requests/suggestions directly to exco WhatsApp
+     No backend needed — uses wa.me API
+     ===================================================== -->
+<section class="section community-section" id="community">
+  <div class="community-bg"></div>
+  <div class="container">
+    <div class="section-label tc">Your Voice Matters</div>
+    <h2 class="section-title tc">Reach the <span class="gold">Administration</span></h2>
+    <p class="section-sub tc">Have a suggestion, complaint, or collaboration idea? Send it directly to the NESAAU executives. We read every message.</p>
+
+    <div class="community-layout">
+
+      <!-- Left: info cards -->
+<div class="community-info">
+  <div class="comm-info-card">
+    <span class="comm-info-icon"><i class="fa-solid fa-handshake"></i></span>
+    <div>
+      <strong>Collaboration Requests</strong>
+      <p>Want NESAAU to partner with another school, organisation, or brand? Tell us who and why.</p>
+    </div>
+  </div>
+  
+  <div class="comm-info-card">
+    <span class="comm-info-icon"><i class="fa-solid fa-lightbulb"></i></span>
+    <div>
+      <strong>Administration Wishes</strong>
+      <p>What do you want this administration to achieve? Seminars, welfare, resources, speak up.</p>
+    </div>
+  </div>
+
+  <div class="comm-whatsapp-note">
+    <span style="color: #25D366;"><i class="fa-brands fa-whatsapp"></i></span>
+    <p>Messages are sent directly via <strong>WhatsApp</strong> to the NESAAU PRO.</p>
+  </div>
+</div>
+
+      <!-- Right: form -->
+      <div class="community-form-wrap">
+        <div class="comm-form-header">
+          <h3>Send Your Message</h3>
+          <p>Fill the form and click send, your WhatsApp will open with the message ready to go.</p>
+        </div>
+
+        <div class="comm-form">
+          <div class="form-row">
+            <label>Your Full Name</label>
+            <input type="text" id="commName" placeholder="e.g. Your Full Name" autocomplete="off"/>
+          </div>
+
+          <div class="form-row">
+            <label>Your Matric Number <span class="form-optional">(optional)</span></label>
+            <input type="text" id="commMatric" placeholder="e.g. YY/NNNN" autocomplete="off"/>
+          </div>
+
+          <div class="form-row">
+            <label>Request Type</label>
+            <select id="commType">
+              <option value="" disabled selected>-- Select Request Type --</option>
+              <option value="Collaboration Request">Collaboration Request</option>
+              <option value="Administration Wish">Administration Wish</option>
+              <option value="Complaint / Feedback">Complaint / Feedback</option>
+              <option value="Academic Resource Request">Academic Resource Request</option>
+              <option value="Event Suggestion">Event Suggestion</option>
+              <option value="General Idea">General Idea</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <!-- Collaboration extra field — shown only when Collab is selected -->
+          <div class="form-row comm-collab-field" id="commCollabField" style="display:none;">
+            <label>Which school / organisation would you like to collaborate with?</label>
+            <input type="text" id="commCollab" placeholder="e.g. University of Ibadan Economics Association"/>
+          </div>
+
+          <div class="form-row">
+            <label>Your Message</label>
+            <textarea id="commMessage" rows="5" placeholder="Type your full message here. Be as detailed as possible, the more context you give, the better we can respond."></textarea>
+          </div>
+
+          <div class="form-row">
+            <label>How urgent is this? <span class="form-optional">(optional)</span></label>
+            <div class="urgency-btns">
+            <button type="button" class="urgency-btn" onclick="setUrgency('Low', this)">
+            <i class="fa-solid fa-circle" style="color: #2ecc71; font-size: 10px; margin-right: 5px;"></i> Low
+          </button>
+            <button type="button" class="urgency-btn" onclick="setUrgency('Medium', this)">
+            <i class="fa-solid fa-circle" style="color: #f1c40f; font-size: 10px; margin-right: 5px;"></i> Medium
+          </button>
+            <button type="button" class="urgency-btn" onclick="setUrgency('High', this)">
+            <i class="fa-solid fa-circle" style="color: #e74c3c; font-size: 10px; margin-right: 5px;"></i> High
+          </button>
+          </div>
+          </div>
+
+            <button class="btn-comm-send" onclick="sendToWhatsApp()">
+              <i class="fa-brands fa-whatsapp" style="margin-right: 8px;"></i> Send via WhatsApp
+            </button>
+
+          <p class="comm-disclaimer">
+            <i class="fa-solid fa-shield-halved"></i> 
+            Your message opens in WhatsApp for you to review before sending. Nothing is sent automatically without your confirmation.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     TESTIMONIALS
+     ===================================================== -->
+<section class="section testimonials-section" id="testimonials">
+  <div class="container">
+    <div class="section-label tc">Member Voices</div>
+    <h2 class="section-title tc">What Our <span class="gold">Members Say</span></h2>
+    <p class="section-sub tc">Real words from dues-paying NESAAU members across all levels.</p>
+  </div>
+  <div class="testi-track-wrap">
+    <div class="testi-track" id="testiTrack">
+      <!-- Card 1 -->
+      <div class="testi-card">
+        <div class="testi-quote-mark">&ldquo;</div>
+        <p class="testi-text">NESAAU changed how I approach my academics entirely. The past questions archive alone saved my GPA more than once. Being a dues-paying member is genuinely worth every naira.</p>
+        <div class="testi-footer">
+          <div class="testi-avatar" style="background:linear-gradient(135deg,#0a2463,#1e4f99)"><span>SA</span></div>
+          <div class="testi-meta"><strong>Sunday Alexis</strong><span>400 Level &bull; Economics</span></div>
+          <div class="testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        </div>
+      </div>
+      <!-- Card 2 -->
+      <div class="testi-card">
+        <div class="testi-quote-mark">&ldquo;</div>
+        <p class="testi-text">The executives are so approachable and actually listen. When I had issues with my clearance, NESAAU sorted it out in less than a day. This association is the real deal.</p>
+        <div class="testi-footer">
+          <div class="testi-avatar" style="background:linear-gradient(135deg,#c9a84c,#a5842a)"><span>FD</span></div>
+          <div class="testi-meta"><strong>Fanowopo Daniella</strong><span>400 Level &bull; Economics</span></div>
+          <div class="testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        </div>
+      </div>
+      <!-- Card 3 -->
+      <div class="testi-card">
+        <div class="testi-quote-mark">&ldquo;</div>
+        <p class="testi-text">I didn't take dues seriously in my first year and missed so much. Now I pay on day one every session. The seminars, the notes, the community, NESAAU is worth it 100%.</p>
+        <div class="testi-footer">
+          <div class="testi-avatar" style="background:linear-gradient(135deg,#1a3a6b,#0a2463)"><span>IP</span></div>
+          <div class="testi-meta"><strong>Ikeyina Praise</strong><span>400 Level &bull; Economics</span></div>
+          <div class="testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        </div>
+      </div>
+      <!-- Card 4 -->
+      <div class="testi-card">
+        <div class="testi-quote-mark">&ldquo;</div>
+        <p class="testi-text">As a 200L student, NESAAU made me feel at home in the department immediately. The older members are welcoming and the resources they share are genuinely top-tier.</p>
+        <div class="testi-footer">
+          <div class="testi-avatar" style="background:linear-gradient(135deg,#c9a84c,#1a3a6b)"><span>PA</span></div>
+          <div class="testi-meta"><strong>Praise Ayomipo</strong><span>200 Level &bull; Economics</span></div>
+          <div class="testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        </div>
+      </div>
+      <!-- Card 5 -->
+      <div class="testi-card">
+        <div class="testi-quote-mark">&ldquo;</div>
+        <p class="testi-text">NESAAU is proof that a student association can be run with integrity. Transparent dues payment, real welfare support, and an exec team that actually shows up, rare and commendable.</p>
+        <div class="testi-footer">
+          <div class="testi-avatar" style="background:linear-gradient(135deg,#0e1f4f,#1e4f99)"><span>AB</span></div>
+          <div class="testi-meta"><strong>Adaramola Boluwatife</strong><span>300 Level &bull; Economics</span></div>
+          <div class="testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        </div>
+      </div>
+      <!-- Duplicates for seamless loop -->
+      <div class="testi-card" aria-hidden="true">
+        <div class="testi-quote-mark">&ldquo;</div>
+        <p class="testi-text">NESAAU changed how I approach my academics entirely. The past questions archive alone saved my GPA more than once. Being a dues-paying member is genuinely worth every naira.</p>
+        <div class="testi-footer">
+          <div class="testi-avatar" style="background:linear-gradient(135deg,#0a2463,#1e4f99)"><span>SA</span></div>
+          <div class="testi-meta"><strong>Sunday Alexis</strong><span>400 Level &bull; Economics</span></div>
+          <div class="testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        </div>
+      </div>
+      <div class="testi-card" aria-hidden="true">
+        <div class="testi-quote-mark">&ldquo;</div>
+        <p class="testi-text">The executives are so approachable and actually listen. When I had issues with my clearance, NESAAU sorted it out in less than a day. This association is the real deal.</p>
+        <div class="testi-footer">
+          <div class="testi-avatar" style="background:linear-gradient(135deg,#c9a84c,#a5842a)"><span>FD</span></div>
+          <div class="testi-meta"><strong>Fanowopo Daniella</strong><span>400 Level &bull; Economics</span></div>
+          <div class="testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        </div>
+      </div>
+      <div class="testi-card" aria-hidden="true">
+        <div class="testi-quote-mark">&ldquo;</div>
+        <p class="testi-text">I didn't take dues seriously in my first year and missed so much. Now I pay on day one every session. The seminars, the notes, the community, NESAAU is worth it 100%.</p>
+        <div class="testi-footer">
+          <div class="testi-avatar" style="background:linear-gradient(135deg,#1a3a6b,#0a2463)"><span>IP</span></div>
+          <div class="testi-meta"><strong>Ikeyina Praise</strong><span>400 Level &bull; Economics</span></div>
+          <div class="testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        </div>
+      </div>
+      <div class="testi-card" aria-hidden="true">
+        <div class="testi-quote-mark">&ldquo;</div>
+        <p class="testi-text">As a 200L student, NESAAU made me feel at home in the department immediately. The older members are welcoming and the resources they share are genuinely top-tier.</p>
+        <div class="testi-footer">
+          <div class="testi-avatar" style="background:linear-gradient(135deg,#c9a84c,#1a3a6b)"><span>PA</span></div>
+          <div class="testi-meta"><strong>Praise Ayomipo</strong><span>200 Level &bull; Economics</span></div>
+          <div class="testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        </div>
+      </div>
+      <div class="testi-card" aria-hidden="true">
+        <div class="testi-quote-mark">&ldquo;</div>
+        <p class="testi-text">NESAAU is proof that a student association can be run with integrity. Transparent dues payment, real welfare support, and an exec team that actually shows up, rare and commendable.</p>
+        <div class="testi-footer">
+          <div class="testi-avatar" style="background:linear-gradient(135deg,#0e1f4f,#1e4f99)"><span>AB</span></div>
+          <div class="testi-meta"><strong>Adaramola Boluwatife</strong><span>300 Level &bull; Economics</span></div>
+          <div class="testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-fade-left"></div>
+    <div class="testi-fade-right"></div>
+  </div>
+</section>
+
+<!-- =====================================================
+     FOOTER
+     ===================================================== -->
+<footer class="footer">
+  <div class="footer-top">
+    <div class="container footer-grid">
+      <div class="footer-col footer-brand-col">
+        <div class="footer-brand">
+          <img src="logo.jpeg" alt="NESAAU Logo" class="footer-logo-img"/>
+          <div>
+            <strong>NESAAU</strong>
+            <small>Adeleke University, Ede</small>
+          </div>
+        </div>
+        <p>The official Economics Students Association of Adeleke University, building future economists since 2018.</p>
+        <div class="footer-socials">
+  <a href="#" aria-label="Twitter/X">
+    <i class="fa-brands fa-x-twitter"></i>
+  </a>
+
+  <a href="https://www.instagram.com/nesa.adelekeuni?igsh=N2swMnNnc2diYmYy" aria-label="Instagram">
+    <i class="fa-brands fa-instagram"></i>
+  </a>
+
+  <a href="https://www.tiktok.com/@nesaadelekeuni.chapter?_r=1&_t=ZS-95i3q0IJEBU" aria-label="TikTok">
+    <i class="fa-brands fa-tiktok"></i>
+  </a>
+</div>
+      </div>
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="#home">Home</a></li>
+          <li><a href="#about">About Us</a></li>
+          <li><a href="#executives">Executives</a></li>
+          <li><a href="#academics">Academics</a></li>
+          <li><a href="#constitution">Constitution</a></li>
+          <li><a href="#dues">Pay Dues</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact Info</h4>
+        <ul class="contact-list">
+          <li>
+            <i class="fa-solid fa-location-dot"></i> 
+            Dept. of Economics, Adeleke University, Ede, Osun State
+          </li>
+          <li>
+            <i class="fa-solid fa-envelope"></i> 
+            <a href="mailto:nesaau@adelekeuniversity.edu.ng">nesaau@adelekeuniversity.edu.ng</a>
+          </li>
+          <li>
+            <i class="fa-solid fa-phone-flip"></i> 
+            <a href="tel:+2348000000000">+234 800 000 0000</a>
+          </li>
+          <li>
+            <i class="fa-solid fa-clock"></i> 
+            Mon–Fri: 8:00 AM – 4:00 PM
+          </li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Session</h4>
+        <div class="session-badge">
+          <strong>2025/2026</strong>
+          <span>Current Academic Session</span>
+        </div>
+        <div class="footer-quick-btns">
+          <a href="#dues" class="fqb">
+            <i class="fa-solid fa-credit-card"></i> Pay Dues
+          </a>
+          <a href="#academics" class="fqb">
+            <i class="fa-solid fa-book-open"></i> Resources
+          </a>
+      </div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="container footer-bottom-inner">
+      <p>&#169; 2025 NESAAU – Nigeria Economics Students Association, Adeleke University Chapter. All Rights Reserved.</p>
+      <p>Designed &amp; Built with &#10084;&#65039; by <strong><a href="mailto:lasisikenny7@gmail.com">LKenny</a></strong> &middot; UI/UX Designer &amp; Developer</p>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+<script src="auth.js"></script>
+<script src="dues.js"></script>
+</body>
+</html>
