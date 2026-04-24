@@ -533,9 +533,9 @@ async function loadSpotlight() {
         <div class="spotlight-name">${data.full_name}</div>
         <div class="spotlight-role">${data.role || 'NESAAU Member'}</div>
         ${waLink ? `
-          <a href="${waLink}" target="_blank" class="spotlight-connect-btn">
-            &#128241; Connect on WhatsApp
-          </a>
+        <a href="${waLink}" target="_blank" class="spotlight-connect-btn">
+          <i class="fa-brands fa-whatsapp"></i> Connect on WhatsApp
+        </a>
         ` : ''}
       </div>
       <div class="spotlight-right">
