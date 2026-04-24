@@ -1,9 +1,3 @@
-/* ============================================================
-   NESAAU — Nigeria Economics Students Association
-   Adeleke University Chapter · Blue / Gold Theme
-   ============================================================ */
-
-/* ---------- VARIABLES ---------- */
 :root {
   --blue:       #0a2463;
   --blue-mid:   #1a3a6b;
@@ -26,7 +20,6 @@
   --transition: .3s cubic-bezier(.4,0,.2,1);
 }
 
-/* ---------- RESET ---------- */
 *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
 html { scroll-behavior:smooth; font-size:16px; }
 body { font-family:'DM Sans',sans-serif; color:var(--text); background:var(--white); overflow-x:hidden; }
@@ -37,7 +30,6 @@ button { cursor:pointer; border:none; background:none; font-family:inherit; }
 p { line-height:1.75; color:var(--text-light); }
 input, select { font-family:inherit; }
 
-/* ---------- UTILITY ---------- */
 .container { width:min(1200px,94vw); margin:0 auto; }
 .section { padding:90px 0; }
 .tc { text-align:center; }
@@ -65,7 +57,6 @@ input, select { font-family:inherit; }
 }
 .section-sub { max-width:580px; margin:0 auto 48px; color:var(--text-light); font-size:.95rem; }
 
-/* ---------- OVERLAY ---------- */
 .overlay {
   position:fixed; inset:0; background:rgba(0,0,0,.55);
   z-index:999; opacity:0; pointer-events:none;
@@ -73,7 +64,6 @@ input, select { font-family:inherit; }
 }
 .overlay.active { opacity:1; pointer-events:all; }
 
-/* ---------- SIDEBAR ---------- */
 .sidebar {
   position:fixed; top:0; left:0; height:100vh; width:min(320px,88vw);
   background:var(--blue); z-index:1000;
@@ -118,7 +108,6 @@ input, select { font-family:inherit; }
 }
 .sidebar-nav a span { font-size:.7rem; font-weight:700; opacity:.4; min-width:24px; }
 .sidebar-nav a:hover { color:#fff; background:rgba(255,255,255,.07); border-left-color:var(--gold); }
-/* Sidebar auth additions */
 .sb-divider {
   height: 1px;
   background: rgba(255,255,255,.1);
@@ -152,7 +141,6 @@ input, select { font-family:inherit; }
 }
 .sb-logout-link:hover { color: #fff; }
 
-/* Student info card inside sidebar */
 .sb-student-info {
   margin: 8px 16px;
   background: rgba(255,255,255,.07);
@@ -217,7 +205,6 @@ input, select { font-family:inherit; }
 .sidebar-footer { padding:20px 28px; border-top:1px solid rgba(255,255,255,.1); }
 .sidebar-footer p { font-size:.72rem; color:rgba(255,255,255,.4); }
 
-/* ---------- ANNOUNCE BAR ---------- */
 .announce-bar {
   background:var(--gold); color:var(--blue);
   font-size:.8rem; font-weight:600;
@@ -233,7 +220,6 @@ input, select { font-family:inherit; }
 }
 .announce-inner a { color:var(--blue); text-decoration:underline; margin-left:6px; }
 
-/* ---------- NAVBAR ---------- */
 .navbar {
   position:sticky; top:0; z-index:500;
   background:var(--blue);
@@ -277,7 +263,6 @@ input, select { font-family:inherit; }
 .hamburger:hover { background:rgba(255,255,255,.1); }
 .hamburger span { display:block; width:24px; height:2px; background:#fff; border-radius:2px; transition:all var(--transition); }
 
-/* ---------- HERO ---------- */
 .hero {
   position:relative; min-height:100vh;
   display:flex; align-items:center;
@@ -362,7 +347,6 @@ input, select { font-family:inherit; }
   animation:scrollPulse 1.8s ease infinite;
 }
 
-/* ---------- TICKER ---------- */
 .ticker-wrap {
   display:flex; align-items:stretch;
   background:var(--blue); color:#fff;
@@ -387,7 +371,6 @@ input, select { font-family:inherit; }
   opacity:.35;
 }
 
-/* ---------- ABOUT ---------- */
 .about-grid {
   display:grid; grid-template-columns:1fr 1fr; gap:70px; align-items:center;
 }
@@ -425,7 +408,6 @@ input, select { font-family:inherit; }
 .pillar strong { display:block; color:var(--blue); font-size:.9rem; margin-bottom:4px; }
 .pillar p { font-size:.85rem; margin:0; }
 
-/* ---------- PRESIDENT ---------- */
 .pres-section { position:relative; background:var(--blue-pale); }
 .pres-bg {
   position:absolute; inset:0; opacity:.04;
@@ -468,7 +450,6 @@ input, select { font-family:inherit; }
 .pres-closing { font-style:italic; color:var(--blue); font-weight:500; }
 .pres-sig { margin-top:20px; font-size:.85rem; font-weight:700; color:var(--gold); border-top:1px solid var(--gray-light); padding-top:14px; }
 
-/* ---------- EXECUTIVES ---------- */
 .exec-grid {
   display:grid;
   grid-template-columns:repeat(auto-fill, minmax(180px, 1fr));
@@ -499,7 +480,6 @@ input, select { font-family:inherit; }
 .exec-card h3 { font-size:.9rem; color:var(--blue); font-weight:700; padding:14px 12px 4px; }
 .exec-card span { display:block; font-size:.75rem; color:var(--gray); padding-bottom:14px; }
 
-/* ---------- PAST ADMINISTRATIONS ---------- */
 .past-admin-wrap {
   margin-top: 52px;
 }
@@ -521,21 +501,21 @@ input, select { font-family:inherit; }
   color: var(--gold-dark);
   text-decoration: none;
   displa.past-admin-wrap {
-  margin-top: 40px; /* Pushes the link away from the cards above */
+  margin-top: 40px; 
   width: 100%;
 }
 
 .past-admin-topbar {
   display: flex;
   align-items: center;
-  justify-content: flex-end; /* Keeps it to the far right */
+  justify-content: flex-end; 
   padding: 10px 4px;
 }
 
 .past-admin-count {
   font-size: .78rem;
   color: var(--gray);
-  margin-right: auto; /* Keeps count on the left if you choose to show it */
+  margin-right: auto; 
 }
 
 .past-admin-link {
@@ -545,9 +525,9 @@ input, select { font-family:inherit; }
   text-decoration: none;
   display: inline-flex;
   align-items: center;
-  gap: 8px; /* Slightly wider gap for a cleaner look */
-  letter-spacing: .03em; /* More premium spacing */
-  border-bottom: 1px solid transparent; /* Smoother transition than dashed */
+  gap: 8px; 
+  letter-spacing: .03em; 
+  border-bottom: 1px solid transparent; 
   padding-bottom: 2px;
   transition: all .3s ease;
   cursor: pointer;
@@ -558,17 +538,16 @@ input, select { font-family:inherit; }
   color: var(--blue);
   opacity: 1;
   border-bottom: 1px solid var(--blue);
-  transform: translateX(-3px); /* Subtle hint of movement */
+  transform: translateX(-3px); 
 }
 
 .past-toggle-arrow {
   font-size: .9rem;
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   display: inline-block;
-  color: var(--gold); /* Use the bright gold for the arrow accent */
+  color: var(--gold); 
 }
 
-/* Rotate arrow when open */
 .past-toggle-arrow.open {
   transform: rotate(90deg);
 }y: inline-flex;
@@ -607,7 +586,6 @@ input, select { font-family:inherit; }
   font-size: .9rem;
 }
 
-/* Past admin accordion card */
 .past-admin-card {
   background: #fff;
   border-radius: var(--radius-lg);
@@ -720,7 +698,6 @@ input, select { font-family:inherit; }
   font-size: .88rem;
 }
 
-/* ---------- ACADEMICS ---------- */
 .academics-bg { background:var(--off-white); }
 .tab-bar {
   display:flex; gap:4px; justify-content:center;
@@ -756,7 +733,6 @@ input, select { font-family:inherit; }
   font-size:.8rem; font-weight:700; flex-shrink:0;
   transition:all var(--transition); display:inline-block;
 }
-/* Download gate visual feedback */
 .res-dl.locked {
   background: var(--gray-light);
   color: var(--gray);
@@ -770,7 +746,6 @@ input, select { font-family:inherit; }
 .res-dl:hover { background:var(--blue-light); }
 .res-note { text-align:center; font-size:.78rem; color:var(--gray); margin-top:24px; }
 
-/* ---------- CONSTITUTION ---------- */
 .const-card {
   display:flex; align-items:center; gap:36px; justify-content:space-between;
   background:var(--blue); border-radius:var(--radius-lg);
@@ -829,7 +804,6 @@ input, select { font-family:inherit; }
 .const-reader-body p { font-size:.9rem; color:var(--text-light); margin-bottom:12px; }
 .const-note { font-style:italic; color:var(--gray); font-size:.82rem !important; }
 
-/* ---------- DUES SECTION ---------- */
 .dues-section { position:relative; padding:90px 0; overflow:hidden; }
 .dues-bg {
   position:absolute; inset:0;
@@ -930,7 +904,6 @@ input, select { font-family:inherit; }
   padding:12px 16px; border-radius:var(--radius); font-size:.85rem;
   color:var(--blue); font-weight:600; margin-bottom:4px; display:none;
 }
-/* Payment Amount Box */
 .payment-amt {
   display: flex; 
   align-items: center; 
@@ -938,7 +911,7 @@ input, select { font-family:inherit; }
   background: var(--blue-pale); 
   border-radius: var(--radius);
   padding: 14px 18px;
-  margin-bottom: 20px; /* Space before the account details */
+  margin-bottom: 20px; 
 }
 
 .payment-amt span { 
@@ -951,7 +924,6 @@ input, select { font-family:inherit; }
   font-size: 1.6rem; 
   font-family: 'Playfair Display', serif; 
   color: var(--gold); 
-  /* Ensures the Naira symbol and numbers sit perfectly together */
   display: flex;
   align-items: center;
   gap: 4px;
@@ -1013,7 +985,6 @@ input, select { font-family:inherit; }
   padding: 30px 10px;
 }
 
-/* Success Icon Animation */
 .success-ani { 
   font-size: 4rem; 
   margin-bottom: 20px; 
@@ -1046,7 +1017,6 @@ input, select { font-family:inherit; }
   transition: all var(--transition);
 }
 
-/* Benefits Sidebar - Glassmorphism Style */
 .dues-benefits {
   background: rgba(255, 255, 255, .06); 
   backdrop-filter: blur(10px);
@@ -1072,12 +1042,11 @@ input, select { font-family:inherit; }
   margin-bottom: 18px; 
 }
 
-/* Updated List Alignment for Icons */
 .benefits-list { 
   display: flex; 
   flex-direction: column; 
   gap: 12px; 
-  list-style: none; /* Ensures no default bullets appear */
+  list-style: none; 
   padding: 0;
 }
 
@@ -1090,9 +1059,8 @@ input, select { font-family:inherit; }
   line-height: 1.4;
 }
 
-/* Icon Specific Styling */
 .benefits-list li i { 
-  color: #2ecc71; /* Success Green */
+  color: #2ecc71; 
   font-size: 0.95rem;
   flex-shrink: 0; 
   margin-top: 2px;
@@ -1126,7 +1094,6 @@ input, select { font-family:inherit; }
   color: var(--gold);
 }
 
-/* ---------- FOOTER ---------- */
 .footer { background:var(--blue); color:rgba(255,255,255,.8); }
 .footer-top { padding:70px 0; border-bottom:1px solid rgba(255,255,255,.08); }
 .footer-grid { display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr; gap:48px; }
@@ -1154,19 +1121,16 @@ input, select { font-family:inherit; }
   border: 1px solid rgba(255,255,255,.12);
   display: grid; 
   place-items: center; 
-  /* UPDATED: Increased size so icons look clear */
   font-size: 1.1rem; 
   color: rgba(255,255,255,.7);
   transition: all var(--transition);
 }
-/* Keep your base hover transition */
 .footer-socials a:hover { 
   background: var(--gold); 
   border-color: var(--gold); 
-  transform: translateY(-3px); /* Subtle lift effect */
+  transform: translateY(-3px); 
 }
 
-/* Specific Brand Colors for the icons on hover */
 .footer-socials a:hover .fa-x-twitter { 
   color: #000000; 
 }
@@ -1176,8 +1140,8 @@ input, select { font-family:inherit; }
 }
 
 .footer-socials a:hover .fa-tiktok { 
-  color: #010101; /* TikTok Black */
-  text-shadow: 2px 2px #ff0050, -2px -2px #00f2ea; /* The TikTok "glitch" look */
+  color: #010101; 
+  text-shadow: 2px 2px #ff0050, -2px -2px #00f2ea; 
 }
 
 .footer-col h4 { color:#fff; font-size:.9rem; margin-bottom:18px; position:relative; padding-bottom:10px; }
@@ -1188,7 +1152,7 @@ input, select { font-family:inherit; }
 
 .contact-list li { 
   display: flex;
-  align-items: flex-start; /* Keeps icon aligned with the first line of text */
+  align-items: flex-start; 
   gap: 12px;
   font-size: .82rem; 
   color: rgba(255,255,255,.6); 
@@ -1246,7 +1210,6 @@ input, select { font-family:inherit; }
 .footer-bottom p { font-size:.78rem; color:rgba(255,255,255,.4); }
 .footer-bottom strong { color:var(--gold); }
 
-/* ---------- AUTH MODAL (NESAAU ADDITION) ---------- */
 .auth-modal-overlay {
   position:fixed; inset:0; background:rgba(0,0,0,.6);
   z-index:1100; opacity:0; pointer-events:none; transition:opacity .3s;
@@ -1308,8 +1271,6 @@ input, select { font-family:inherit; }
 .auth-msg.success { background:#f0fdf4; color:#16a34a; border:1px solid #86efac; }
 .auth-msg.info    { background:var(--off-white); color:var(--gray); }
 
-/* ---------- STUDENT BAR (NESAAU ADDITION) ---------- */
-/* ---------- STUDENT BAR (NESAAU ADDITION) ---------- */
 .student-bar {
   background: var(--blue);
   border-bottom: 1px solid rgba(255,255,255,.1);
@@ -1383,7 +1344,6 @@ input, select { font-family:inherit; }
   background: rgba(255,255,255,.1);
   color: #fff;
 }
-/* ---------- NAV AUTH BUTTONS (NESAAU ADDITION) ---------- */
 .nav-auth-btns { display:flex; align-items:center; gap:8px; }
 .btn-login-nav {
   color:rgba(255,255,255,.8); font-size:.88rem; font-weight:600;
@@ -1392,7 +1352,6 @@ input, select { font-family:inherit; }
 }
 .btn-login-nav:hover { color:#fff; border-color:#fff; background:rgba(255,255,255,.08); }
 
-/* ---------- DUES LOGIN GATE (NESAAU ADDITION) ---------- */
 .dues-login-gate {
   display:flex; justify-content:center; margin-top:48px;
 }
@@ -1433,7 +1392,6 @@ input, select { font-family:inherit; }
   flex-shrink: 0;
 }
 
-/* ---------- TOAST POPUP ---------- */
 .toast-popup {
   position: fixed;
   bottom: -100px;
@@ -1464,7 +1422,6 @@ input, select { font-family:inherit; }
 }
 .toast-close:hover { background: rgba(255,255,255,.1); color: #fff; }
 
-/* ---------- NAV STUDENT INFO ---------- */
 .nav-student-info {
   display: flex;
   align-items: center;
@@ -1487,7 +1444,6 @@ input, select { font-family:inherit; }
   color: rgba(255,255,255,.55); font-size: .7rem;
 }
 
-/* ---------- COMMUNITY REQUEST FORM ---------- */
 .community-section {
   position: relative;
   background: var(--off-white);
@@ -1516,7 +1472,6 @@ input, select { font-family:inherit; }
   z-index: 1;
 }
 
-/* Info cards (left col) */
 .comm-info-card {
   display: flex;
   align-items: flex-start;
@@ -1540,8 +1495,8 @@ input, select { font-family:inherit; }
 }
 .comm-info-icon i {
   color: var(--gold);
-  display: block; /* Removes any unwanted baseline spacing */
-  width: 32px;    /* Fixed width keeps text aligned even if icons vary in width */
+  display: block; 
+  width: 32px;   
   text-align: center;
 }
 .comm-info-card strong {
@@ -1578,7 +1533,6 @@ input, select { font-family:inherit; }
   line-height: 1.6;
 }
 
-/* Form card (right col) */
 .community-form-wrap {
   background: #fff;
   border-radius: var(--radius-lg);
@@ -1630,7 +1584,6 @@ input, select { font-family:inherit; }
   font-weight: 400;
 }
 
-/* Urgency selector */
 .urgency-btns {
   display: flex;
   gap: 10px;
@@ -1654,7 +1607,6 @@ input, select { font-family:inherit; }
   border-color: var(--blue);
 }
 
-/* Send button */
 .btn-comm-send {
   background: linear-gradient(135deg, #25d366, #128c7e);
   color: #fff;
@@ -1685,12 +1637,11 @@ input, select { font-family:inherit; }
   line-height: 1.6;
 }
 .comm-disclaimer i {
-  color: var(--gold); /* Or a soft gray if you want it less bold */
+  color: var(--gold); 
   font-size: 0.85rem;
   flex-shrink: 0;
 }
 
-/* Responsive */
 @media (max-width: 900px) {
   .community-layout {
     grid-template-columns: 1fr;
@@ -1702,7 +1653,6 @@ input, select { font-family:inherit; }
   .comm-form-header { padding: 20px 18px; }
 }
 
-/* ---------- PERSONNEL SPOTLIGHT ---------- */
 .spotlight-section { background: var(--off-white); }
 
 .spotlight-loading {
@@ -1720,7 +1670,6 @@ input, select { font-family:inherit; }
   border: 1px solid var(--gray-light);
 }
 
-/* Left panel */
 .spotlight-left {
   background: linear-gradient(160deg, var(--blue) 0%, #0e1f4f 100%);
   padding: 40px 32px;
@@ -1771,7 +1720,6 @@ input, select { font-family:inherit; }
   box-shadow: 0 6px 20px rgba(37,211,102,.35);
 }
 
-/* Right panel */
 .spotlight-right {
   padding: 40px 44px;
   display: flex; flex-direction: column; gap: 24px;
@@ -1786,7 +1734,6 @@ input, select { font-family:inherit; }
   line-height: 1.85; margin: 0;
 }
 
-/* Skills */
 .spotlight-skills-wrap { display: flex; flex-direction: column; gap: 8px; }
 .spotlight-skill-tags {
   display: flex; flex-wrap: wrap; gap: 8px;
@@ -1799,7 +1746,6 @@ input, select { font-family:inherit; }
   border: 1px solid rgba(10,36,99,.1);
 }
 
-/* Work samples */
 .spotlight-work-wrap { display: flex; flex-direction: column; gap: 10px; }
 .spotlight-work-links {
   display: flex; flex-wrap: wrap; gap: 10px;
@@ -1818,7 +1764,6 @@ input, select { font-family:inherit; }
   border-color: var(--blue);
 }
 
-/* No spotlight state */
 .spotlight-empty {
   text-align: center; padding: 60px 20px;
   background: #fff; border-radius: var(--radius-lg);
@@ -1828,14 +1773,12 @@ input, select { font-family:inherit; }
 .spotlight-empty h3 { color: var(--blue); font-family: 'Playfair Display', serif; margin-bottom: 8px; }
 .spotlight-empty p { color: var(--gray); font-size: .88rem; }
 
-/* Responsive */
 @media (max-width: 900px) {
   .spotlight-card { grid-template-columns: 1fr; }
   .spotlight-left { padding: 32px 24px; }
   .spotlight-right { padding: 28px 24px; }
 }
 
-/* ---------- ANNOUNCEMENTS SECTION ---------- */
 .announcements-section { background: var(--blue); position: relative; overflow: hidden; }
 .announcements-section::before {
   content: '';
@@ -1974,7 +1917,7 @@ input, select { font-family:inherit; }
 .empty-icon-wrapper {
   width: 60px;
   height: 60px;
-  background: rgba(201, 168, 76, 0.1); /* Very light gold */
+  background: rgba(201, 168, 76, 0.1); 
   color: var(--gold);
   border-radius: 50%;
   display: flex;
@@ -1985,7 +1928,6 @@ input, select { font-family:inherit; }
 }
 .ann-empty span { font-size: 2.5rem; display: block; margin-bottom: 12px; }
 
-/* ---------- TESTIMONIALS ---------- */
 .testimonials-section {
   background: var(--off-white);
   padding-bottom: 100px;
@@ -2076,7 +2018,6 @@ input, select { font-family:inherit; }
 .testi-fade-left  { left:  0; background: linear-gradient(to right, var(--off-white), transparent); }
 .testi-fade-right { right: 0; background: linear-gradient(to left,  var(--off-white), transparent); }
  
-/* ---------- ANIMATIONS ---------- */
 @keyframes testiScroll {
   0%   { transform: translateX(0); }
   100% { transform: translateX(-50%); }
@@ -2099,7 +2040,6 @@ input, select { font-family:inherit; }
   60%     { transform:scale(0.95); }
 }
  
-/* ---------- RESPONSIVE ---------- */
 @media (max-width:1024px) {
   .about-grid { grid-template-columns:1fr; gap:48px; }
   .about-img-col { max-width:540px; margin:0 auto; }
@@ -2142,7 +2082,7 @@ input, select { font-family:inherit; }
 }
 
 .navbar {
-  background: #001f3f; /* Your deep blue */
+  background: #001f3f; 
   padding: 10px 20px;
   position: relative;
   z-index: 1000;
@@ -2154,7 +2094,6 @@ input, select { font-family:inherit; }
   align-items: center;
 }
 
-/* Identity Section */
 .nav-identity {
   display: flex;
   align-items: center;
