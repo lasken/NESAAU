@@ -1,7 +1,3 @@
-/* ============================================================
-   NESAAU — admin.css
-   Admin panel styles — completely separate from main site
-   ============================================================ */
 :root {
   --blue: #0a2463; --blue-mid: #1a3a6b; --gold: #c9a84c;
   --gold-light: #e8c96a; --white: #fff; --off-white: #f8f9fc;
@@ -26,7 +22,6 @@ input,select { font-family:inherit; }
   flex-shrink: 0;
 }
 
-/* LOGIN SCREEN */
 .admin-login-screen {
   min-height:100vh; display:grid; place-items:center;
   background:linear-gradient(135deg,var(--blue),#0e1f4f);
@@ -71,10 +66,8 @@ input,select { font-family:inherit; }
 .auth-msg.success { display:block; background:#f0fdf4; color:#16a34a; border:1px solid #86efac; }
 .auth-msg.info    { display:block; background:var(--off-white); color:var(--gray); }
 
-/* DASHBOARD LAYOUT */
 .admin-dashboard { display:flex; min-height:100vh; }
 
-/* SIDEBAR */
 .admin-sidebar {
   width:260px; flex-shrink:0;
   background:var(--blue); display:flex; flex-direction:column;
@@ -89,9 +82,9 @@ input,select { font-family:inherit; }
 .admin-nav { flex:1; padding:16px 0; display:flex; flex-direction:column; }
 
 .admin-nav-link {
-  display: flex;         /* Changed from block to flex */
-  align-items: center;   /* Centers icon and text vertically */
-  gap: 12px;            /* Adds space between the logo and text */
+  display: flex;        
+  align-items: center;   
+  gap: 12px;            
   padding: 13px 24px;
   color: rgba(255, 255, 255, .7);
   font-size: .88rem;
@@ -101,13 +94,12 @@ input,select { font-family:inherit; }
   transition: all .25s;
 }
 
-/* Specifically target the logo/icon inside the link */
 .admin-nav-link img, 
 .admin-nav-link i {
-  width: 18px;          /* Small and classy size */
+  width: 18px;         
   height: 18px;
   object-fit: contain;
-  flex-shrink: 0;       /* Prevents the logo from being squashed */
+  flex-shrink: 0;       
 }
 
 .admin-nav-link:hover, 
@@ -117,7 +109,6 @@ input,select { font-family:inherit; }
   border-left-color: var(--gold);
 }
 
-/* Optional: Make the logo full color only when active */
 .admin-nav-link img {
   filter: grayscale(100%) brightness(1.5);
   opacity: 0.6;
@@ -129,7 +120,7 @@ input,select { font-family:inherit; }
   opacity: 1;
 }
 .admin-sidebar-foot {
-  margin-top: auto; /* Pushes the footer to the very bottom of the sidebar */
+  margin-top: auto;
   padding: 20px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
@@ -137,9 +128,8 @@ input,select { font-family:inherit; }
   gap: 12px;
 }
 
-/* Logout Button Styling */
 .admin-logout-btn {
-  background: rgba(231, 76, 60, 0.1); /* Subtle red tint */
+  background: rgba(231, 76, 60, 0.1); 
   color: #ff7675;
   border: 1px solid rgba(231, 76, 60, 0.2);
   padding: 10px;
@@ -158,7 +148,6 @@ input,select { font-family:inherit; }
   color: white;
 }
 
-/* View Website Link */
 .admin-view-site {
   display: flex;
   align-items: center;
@@ -181,7 +170,6 @@ input,select { font-family:inherit; }
   opacity: 0.7;
 }
 
-/* MAIN */
 .admin-main { flex:1; padding:36px; overflow-y:auto; }
 .admin-panel { display:none; }
 .admin-panel.active { display:block; }
@@ -189,7 +177,6 @@ input,select { font-family:inherit; }
 .admin-panel-hdr h2 { font-family:'Playfair Display',serif; color:var(--blue); font-size:1.5rem; }
 .panel-subtitle { color:var(--gray); font-size:.88rem; }
 
-/* FILTER BAR */
 .filter-bar { display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; }
 .filter-btn {
   padding:8px 18px; border-radius:20px; font-size:.82rem; font-weight:600;
@@ -198,7 +185,6 @@ input,select { font-family:inherit; }
 .filter-btn:hover { border-color:var(--blue); color:var(--blue); }
 .filter-btn.active { background:var(--blue); color:#fff; border-color:var(--blue); }
 
-/* SUBMISSION CARDS */
 .submission-card {
   background:#fff; border-radius:var(--radius); padding:20px;
   box-shadow:var(--shadow); border-left:4px solid var(--gray-light);
@@ -235,7 +221,6 @@ input,select { font-family:inherit; }
 }
 .btn-reject:hover { background:#b91c1c; }
 
-/* MEMBERS TABLE */
 .members-search input {
   width:100%; padding:11px 16px; border:1.5px solid var(--gray-light);
   border-radius:var(--radius); font-size:.9rem; margin-bottom:16px;
@@ -252,7 +237,6 @@ input,select { font-family:inherit; }
 .status-chip.unpaid   { background:#fee2e2; color:#b91c1c; }
 .status-select { border:1px solid var(--gray-light); border-radius:6px; padding:6px 10px; font-size:.8rem; }
 
-/* EXEC CMS */
 .exec-cms-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:24px; margin-bottom:20px; }
 .exec-cms-card {
   background:#fff; border-radius:var(--radius-lg); padding:24px;
@@ -271,7 +255,6 @@ input,select { font-family:inherit; }
 .btn-add-exec { background:var(--gold); color:var(--blue); padding:12px 28px; border-radius:var(--radius); font-weight:700; font-size:.9rem; transition:all .2s; }
 .btn-add-exec:hover { background:var(--gold-light); }
 
-/* STATS */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -322,23 +305,20 @@ input,select { font-family:inherit; }
   letter-spacing: 0.5px;
 }
 
-/* Color Coding for Accountability */
 .stat-card.paid .stat-ico-wrapper { background: rgba(46, 204, 113, 0.1); color: #2ecc71; }
 .stat-card.pending .stat-ico-wrapper { background: rgba(241, 196, 15, 0.1); color: #f1c40f; }
 .stat-card.unpaid .stat-ico-wrapper { background: rgba(231, 76, 60, 0.1); color: #e74c3c; }
 
-/* Highlight the icon when the card is active */
 .stat-card:hover .stat-ico-wrapper {
   background: var(--gold);
   color: #fff;
 }
 
-/* SESSION RESET */
 .session-reset-container {
   margin-top: 40px;
   padding: 24px;
-  background: #fff5f5; /* Very light red background */
-  border: 1px dashed #feb2b2; /* Soft red border */
+  background: #fff5f5; 
+  border: 1px dashed #feb2b2;
   border-radius: 16px;
 }
 
@@ -347,7 +327,7 @@ input,select { font-family:inherit; }
   align-items: center;
   gap: 12px;
   margin-bottom: 12px;
-  color: #c53030; /* Deep warning red */
+  color: #c53030; 
 }
 
 .reset-header i {
@@ -391,9 +371,7 @@ input,select { font-family:inherit; }
 .btn-reset-session i {
   font-size: 0.9rem;
 }
-/* MISC */
 .loading-state,.empty-state { text-align:center; padding:40px; color:var(--gray); font-size:.9rem; }
-/* Admin create card */
 .admin-create-card {
   background: #fff;
   border-radius: var(--radius-lg);
@@ -455,7 +433,7 @@ input,select { font-family:inherit; }
 .btn-archive-session {
   width: 100%;
   padding: 14px;
-  background: #d97706; /* A more professional, deep amber */
+  background: #d97706; 
   color: white;
   border: none;
   border-radius: 12px;
@@ -471,7 +449,7 @@ input,select { font-family:inherit; }
 }
 
 .btn-archive-session:hover {
-  background: #b45309; /* Darkens on hover */
+  background: #b45309; 
   transform: translateY(-2px);
   box-shadow: 0 8px 15px rgba(180, 83, 9, 0.3);
 }
@@ -492,25 +470,24 @@ input,select { font-family:inherit; }
   margin-top: 20px;
   overflow-x: auto;
   padding: 5px 2px;
-  /* Hides scrollbar for a cleaner look while keeping functionality */
   scrollbar-width: none; 
 }
 .filter-bar::-webkit-scrollbar { display: none; }
 
 .hdr-title-flex {
   display: flex;
-  align-items: center; /* Vertically centers logo and text */
-  gap: 15px;           /* Space between logo and text */
+  align-items: center; 
+  gap: 15px;           
 }
 
 .hdr-text-group {
   display: flex;
-  flex-direction: column; /* Keeps Title above Subtitle, but the whole group is next to the logo */
+  flex-direction: column; 
   justify-content: center;
 }
 
 .hdr-text-group h2 {
-  margin: 0;           /* Removes default spacing that pushes text away */
+  margin: 0;          
   font-size: 1.4rem;
   line-height: 1.2;
 }
@@ -522,20 +499,20 @@ input,select { font-family:inherit; }
 }
 
 .panel-hdr-logo {
-  width: 45px;         /* Sized for high-end administrative look */
+  width: 45px;         
   height: 45px;
   aspect-ratio: 1/1;
   object-fit: cover;
   border-radius: 50%;
   border: 2px solid var(--gold);
-  flex-shrink: 0;      /* Prevents logo from shrinking on smaller screens */
+  flex-shrink: 0;      
 }
 .filter-btn {
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 10px 20px;
-  border-radius: 12px; /* Slightly less rounded for a "card" feel */
+  border-radius: 12px; 
   border: 1px solid #eee;
   background: #ffffff;
   font-size: 0.85rem;
@@ -547,21 +524,18 @@ input,select { font-family:inherit; }
   box-shadow: 0 2px 4px rgba(0,0,0,0.02);
 }
 
-/* Icon specific colors for inactive state */
 .filter-btn i.fa-clock { color: #f39c12; }
 .filter-btn i.fa-circle-check { color: #27ae60; }
 .filter-btn i.fa-circle-xmark { color: #e74c3c; }
 
-/* --- THE GOLD ACTIVE STATE --- */
 .filter-btn.active {
-  background: var(--gold);      /* The whole card turns gold */
-  color: #ffffff;               /* Text turns pure white */
+  background: var(--gold);      
+  color: #ffffff;               
   border-color: var(--gold);
-  transform: translateY(-2px);  /* Subtle lift effect */
-  box-shadow: 0 6px 15px rgba(201, 168, 76, 0.3); /* Premium gold glow */
+  transform: translateY(-2px);  
+  box-shadow: 0 6px 15px rgba(201, 168, 76, 0.3);
 }
 
-/* Force icons to white when the card is gold */
 .filter-btn.active i {
   color: #ffffff !important; 
 }
