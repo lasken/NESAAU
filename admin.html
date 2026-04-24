@@ -10,7 +10,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="admin.css"/>
-  <!-- NESAAU ADDITION: Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
 </head>
@@ -39,7 +38,25 @@
 
 <div class="admin-dashboard" id="adminDashboard" style="display:none;">
 
-  <aside class="admin-sidebar">
+<div class="admin-topbar">
+  <div class="admin-topbar-brand">
+    <div class="admin-ring">
+      <img src="logo.jpeg" class="brand-logo-img" alt="NESAAU">
+    </div>
+    <div>
+      <strong>NESAAU Admin</strong>
+      <small>Executive Panel</small>
+    </div>
+  </div>
+  <button class="admin-hamburger" onclick="toggleAdminSidebar()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</div>
+
+  <div class="admin-sidebar-overlay" id="adminSidebarOverlay"
+       onclick="closeAdminSidebar()"></div>
+
+  <aside class="admin-sidebar" id="adminSidebar">
     <div class="admin-sidebar-brand">
       <div class="admin-ring"><span>N</span></div>
       <div><strong>NESAAU</strong><small>Admin Panel</small></div>
