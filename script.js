@@ -1,8 +1,3 @@
-/* ============================================================
-   NESAAU — script.js
-   ============================================================ */
-
-// ---------- SIDEBAR ----------
 function openSidebar() {
   document.getElementById('sidebar').classList.add('open');
   document.getElementById('sidebar').setAttribute('aria-hidden', 'false');
@@ -17,12 +12,10 @@ function closeSidebar() {
   document.getElementById('hamburger').setAttribute('aria-expanded', 'false');
   document.body.style.overflow = '';
 }
-// Close sidebar with Escape key
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') closeSidebar();
 });
 
-// ---------- STICKY NAVBAR SCROLL ----------
 const navbar = document.getElementById('navbar');
 window.addEventListener('scroll', function() {
   if (window.scrollY > 60) {
@@ -33,7 +26,6 @@ window.addEventListener('scroll', function() {
   updateActiveNavLink();
 });
 
-// ---------- ACTIVE NAV LINK ON SCROLL ----------
 function updateActiveNavLink() {
   const sections = ['home','about','president','executives','academics','constitution','dues'];
   const navLinks = document.querySelectorAll('.nav-link');
@@ -49,19 +41,14 @@ function updateActiveNavLink() {
   });
 }
 
-// ---------- ACADEMICS TABS ----------
 function switchTab(tabId, btn) {
-  // Hide all panels
   document.querySelectorAll('.resource-panel').forEach(p => p.classList.remove('active'));
-  // Deactivate all buttons
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  // Show selected
   const panel = document.getElementById(tabId);
   if (panel) panel.classList.add('active');
   if (btn) btn.classList.add('active');
 }
 
-// ---------- CONSTITUTION TOGGLE ----------
 function toggleConstitution() {
   const reader = document.getElementById('constReader');
   reader.classList.toggle('open');
@@ -70,14 +57,12 @@ function toggleConstitution() {
   }
 }
 
-// ---------- DUES PORTAL ----------
 function verifyStudent() {
   const matric = document.getElementById('matricInput').value.trim();
   const name   = document.getElementById('nameInput').value.trim();
   const level  = document.getElementById('levelSel').value;
   const msg    = document.getElementById('verifyMsg');
 
-  // Reset
   msg.className = 'verify-msg';
   msg.style.display = 'none';
 
@@ -85,29 +70,24 @@ function verifyStudent() {
     showMsg(msg, 'error', '⚠️ Please fill in all fields before proceeding.');
     return;
   }
-  // Basic matric format check
   const matricPattern = /^\d{2}\/\d{3,5}$/i;
   if (!matricPattern.test(matric.replace(/\s/g,''))) {
     showMsg(msg, 'error', '❌ Invalid matric format. Expected: YY/NNNN');
     return;
   }
 
-  // Simulate verification (replace with real API call)
   showMsg(msg, 'success', '⏳ Verifying your details...');
   setTimeout(() => {
-    // Store for step 2
     window._nesaauStudent = { matric, name, level };
     showStep2(matric, name, level);
   }, 1400);
 }
 
 function showStep2(matric, name, level) {
-  // Update steps
   document.getElementById('stepItem1').classList.remove('active');
   document.getElementById('stepItem1').classList.add('done');
   document.getElementById('stepItem2').classList.add('active');
 
-  // Fill verified bar
   const bar = document.getElementById('verifiedBar');
   bar.style.display = 'block';
   bar.innerHTML = `✅ Verified: <strong>${name}</strong> &nbsp;|&nbsp; ${matric} &nbsp;|&nbsp; ${level} Level`;
@@ -148,7 +128,6 @@ function submitPayment() {
 }
 
 function resetDues() {
-  // Reset all steps
   ['stepItem1','stepItem2','stepItem3'].forEach(id => {
     document.getElementById(id).classList.remove('active','done');
   });
@@ -174,27 +153,24 @@ function copyAcct() {
   });
 }
 
-// ---------- HELPER ----------
 function showMsg(el, type, text) {
   el.className = 'verify-msg ' + type;
   el.innerHTML = text;
   el.style.display = 'block';
 }
 
-// ---------- SMOOTH ANCHOR SCROLL ----------
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   anchor.addEventListener('click', function(e) {
     const target = document.querySelector(this.getAttribute('href'));
     if (target) {
       e.preventDefault();
-      const offset = 72; // navbar height
+      const offset = 72;
       const top = target.getBoundingClientRect().top + window.scrollY - offset;
       window.scrollTo({ top, behavior: 'smooth' });
     }
   });
 });
 
-// ---------- SCROLL REVEAL (lightweight) ----------
 const revealEls = document.querySelectorAll(
   '.exec-card, .res-row, .pillar, .about-grid, .pres-card, .const-card, .section-title'
 );
@@ -211,35 +187,27 @@ revealEls.forEach(el => {
   observer.observe(el);
 });
 
-// ============================================================
-// NESAAU ADDITION — Download Gate
-// Checks login + dues status before allowing download
-// ============================================================
 function handleDownload(event, filePath) {
   event.preventDefault();
 
   const member = window._nesaauMember;
 
-  // Not logged in
   if (!member) {
     showDownloadToast('login');
     openAuthModal();
     return;
   }
 
-  // Logged in but dues not paid
   if (member.dues_status !== 'paid') {
     showDownloadToast('unpaid');
     return;
   }
 
-  // No real file yet
   if (!filePath || filePath === '#') {
     showDownloadToast('unavailable');
     return;
   }
 
-  // All checks passed — trigger download
   const link = document.createElement('a');
   link.href     = filePath;
   link.download = filePath.split('/').pop();
@@ -258,7 +226,6 @@ function showDownloadToast(type) {
 
   if (!toast) return;
 
-  // Clear existing classes
   toast.className = 'toast-popup';
 
   const types = {
@@ -289,20 +256,11 @@ function showDownloadToast(type) {
   msg.textContent  = t.text;
   toast.classList.add(t.cls);
 
-  // Slide in
   setTimeout(() => toast.classList.add('show'), 50);
 
-  // Auto dismiss
   setTimeout(() => closeToast(), 4500);
 }
 
-// ============================================================
-// NESAAU ADDITION — Community Request Form
-// Builds a WhatsApp message and opens wa.me link
-// Change EXCO_WHATSAPP to the PRO or president's number
-// ============================================================
-
-// ⬇ PUT THE EXCO'S WHATSAPP NUMBER HERE (with country code, no + or spaces)
 const EXCO_WHATSAPP = '2348159718496';
 
 let selectedUrgency = '';
@@ -313,7 +271,6 @@ function setUrgency(level, btn) {
   btn.classList.add('active');
 }
 
-// Show/hide collaboration field based on request type
 document.addEventListener('DOMContentLoaded', function() {
   const typeSelect = document.getElementById('commType');
   if (typeSelect) {
@@ -338,7 +295,6 @@ function sendToWhatsApp() {
                     ? document.getElementById('commCollab').value.trim()
                     : '';
 
-  // Validation
   if (!name) {
     showCommunityError('Please enter your full name.');
     return;
@@ -352,7 +308,6 @@ function sendToWhatsApp() {
     return;
   }
 
-  // Build the WhatsApp message
   let waMessage = `*NESAAU Community Request*\n`;
   waMessage += `━━━━━━━━━━━━━━━━━━━━━\n`;
   waMessage += `*From:* ${name}\n`;
@@ -365,12 +320,10 @@ function sendToWhatsApp() {
   waMessage += `━━━━━━━━━━━━━━━━━━━━━\n`;
   waMessage += `_Sent via NESAAU Website_`;
 
-  // Encode and open WhatsApp
   const encoded = encodeURIComponent(waMessage);
   const waURL   = `https://wa.me/${EXCO_WHATSAPP}?text=${encoded}`;
   window.open(waURL, '_blank');
 
-  // Clear form after opening WhatsApp
   setTimeout(() => {
     document.getElementById('commName').value    = '';
     document.getElementById('commMatric').value  = '';
@@ -394,14 +347,9 @@ function showCommunityError(msg) {
   setTimeout(() => closeToast(), 4000);
 }
 
-// ============================================================
-// NESAAU ADDITION — Announcements + Personnel Spotlight
-// Both fetched from Supabase, rendered dynamically
-// ============================================================
 
 let allAnnouncements = [];
 
-// --- Load announcements on page load ---
 async function loadAnnouncements() {
   const grid  = document.getElementById('annGrid');
   const empty = document.getElementById('annEmpty');
@@ -478,7 +426,6 @@ function filterAnnouncements(type, btn) {
   renderAnnouncements(filtered);
 }
 
-// --- Load personnel spotlight ---
 async function loadSpotlight() {
   const wrap = document.getElementById('spotlightWrap');
   if (!wrap) return;
@@ -503,7 +450,6 @@ async function loadSpotlight() {
     return;
   }
 
-  // Parse skills and work samples (stored as comma-separated strings)
   const skills  = data.skills
     ? data.skills.split(',').map(s => s.trim()).filter(Boolean)
     : [];
@@ -569,15 +515,11 @@ async function loadSpotlight() {
   `;
 }
 
-// Run both on page load
 document.addEventListener('DOMContentLoaded', function() {
   loadAnnouncements();
   loadSpotlight();
 });
 
-// ============================================================
-// NESAAU ADDITION — Past Administrations
-// ============================================================
 
 let pastAdminsLoaded = false;
 
@@ -615,7 +557,6 @@ async function loadPastAdmins() {
     return;
   }
 
-  // Fetch all past executives
   const { data: execs } = await supabase
     .from('past_executives')
     .select('*')
