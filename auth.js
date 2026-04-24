@@ -1,9 +1,3 @@
-// ============================================================
-// NESAAU — auth.js
-// Matric-only login, no email, no Supabase Auth
-// ============================================================
-
-// --- Open/close modal ---
 function openAuthModal() {
   document.getElementById('authModal').classList.add('open');
   document.getElementById('authModalOverlay').classList.add('active');
@@ -15,7 +9,6 @@ function closeAuthModal() {
   document.body.style.overflow = '';
 }
 
-// --- Switch login/register tab ---
 function switchAuthTab(tab, btn) {
   document.querySelectorAll('.auth-tab').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
@@ -25,7 +18,6 @@ function switchAuthTab(tab, btn) {
     .classList.remove('hidden');
 }
 
-// --- Hash function ---
 async function hashPassword(password) {
   const msgBuffer  = new TextEncoder().encode(password);
   const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
@@ -33,7 +25,6 @@ async function hashPassword(password) {
   return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
-// --- Register ---
 async function registerStudent() {
   const name     = document.getElementById('regName').value.trim();
   const matric   = document.getElementById('regMatric').value.trim().toUpperCase();
@@ -70,7 +61,6 @@ async function registerStudent() {
 
   showAuthMsg(msg, 'success', '✅ Account created! Logging you in...');
 
-  // Auto login after register
   setTimeout(async () => {
     const { data: member } = await supabase
       .from('members')
@@ -87,7 +77,6 @@ async function registerStudent() {
   }, 800);
 }
 
-// --- Login ---
 async function loginStudent() {
   const matric   = document.getElementById('loginMatric').value.trim().toUpperCase();
   const password = document.getElementById('loginPassword').value;
@@ -118,35 +107,28 @@ async function loginStudent() {
   applySession(member);
 }
 
-// --- Logout ---
 function logoutStudent() {
   localStorage.removeItem('nesaau_member');
   window._nesaauMember = null;
 
-  // Restore logo, hide student info
   document.getElementById('navBrand').style.display       = 'flex';
   document.getElementById('navStudentInfo').style.display = 'none';
 
-  // Clear student info fields
   document.getElementById('navStudentAvatar').textContent = '--';
   document.getElementById('navStudentName').textContent   = '';
   document.getElementById('navStudentSub').textContent    = '';
 
-  // Restore nav buttons
   document.getElementById('navLoginBtn').style.display   = 'inline-block';
   document.getElementById('navDuesBtn').style.display    = 'inline-block';
   document.getElementById('navMyDuesBtn').style.display  = 'none';
   document.getElementById('navLogoutBtn').style.display  = 'none';
 
-  // Restore announcement bar
   const announceBar = document.querySelector('.announce-bar');
   if (announceBar) announceBar.style.display = 'block';
 
-  // Hide student bar (legacy — kept safe)
   const studentBar = document.getElementById('studentBar');
   if (studentBar) studentBar.style.display = 'none';
 
-  // Reset dues section
   document.getElementById('duesLoginGate').style.display  = 'flex';
   document.getElementById('duesPortalWrap').style.display = 'none';
 
@@ -156,48 +138,37 @@ function logoutStudent() {
   updateDownloadButtons('unpaid');
 }
 
-// --- Apply session to UI (dynamic — works for ANY logged-in user) ---
 function applySession(member) {
-  // Hide announcement bar
   const announceBar = document.querySelector('.announce-bar');
   if (announceBar) announceBar.style.display = 'none';
 
-  // Hide old student bar entirely
   const studentBar = document.getElementById('studentBar');
   if (studentBar) studentBar.style.display = 'none';
 
-  // Hide logo, show student info in navbar
   document.getElementById('navBrand').style.display       = 'none';
   document.getElementById('navStudentInfo').style.display = 'flex';
 
-  // Fill with this user's details dynamically
   const initials = member.full_name
     .split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
   document.getElementById('navStudentAvatar').textContent = initials;
   document.getElementById('navStudentName').textContent   = member.full_name;
   document.getElementById('navStudentSub').textContent    = member.matric_number + ' · ' + member.level + ' Level';
 
-  // Swap nav buttons
   document.getElementById('navLoginBtn').style.display   = 'none';
   document.getElementById('navDuesBtn').style.display    = 'none';
   document.getElementById('navMyDuesBtn').style.display  = 'inline-block';
   document.getElementById('navLogoutBtn').style.display  = 'inline-block';
 
-  // Show dues portal, hide gate
   document.getElementById('duesLoginGate').style.display  = 'none';
   document.getElementById('duesPortalWrap').style.display = 'block';
 
-  // Pre-fill dues form with this user's data
   document.getElementById('matricInput').value = member.matric_number;
   document.getElementById('nameInput').value   = member.full_name;
   document.getElementById('levelSel').value    = member.level;
-// Update sidebar student info for mobile
   updateSidebarAuth(member);
   window._nesaauMember = member;
 
-  // Show dues status toast after short delay
   setTimeout(() => showDuesToast(member.dues_status), 900);
-  // Update download button visuals based on dues status
   updateDownloadButtons(member.dues_status);
 }
 
@@ -214,11 +185,9 @@ function updateDownloadButtons(status) {
         : 'Login to download';
     }
   });
-  // Lock all download buttons on logout
   updateDownloadButtons('unpaid');
 }
 
-// --- Toast notification ---
 function showDuesToast(status) {
   const toast = document.getElementById('toastPopup');
   const icon  = document.getElementById('toastIcon');
@@ -239,9 +208,7 @@ function showDuesToast(status) {
     msg.textContent  = 'Dues not yet paid for 2025/2026';
   }
 
-  // Slide in
   setTimeout(() => toast.classList.add('show'), 50);
-  // Auto dismiss after 5.5 seconds
   setTimeout(() => closeToast(), 5500);
 }
 
@@ -250,7 +217,6 @@ function closeToast() {
   if (toast) toast.classList.remove('show');
 }
 
-// --- Load session on page load ---
 function loadStudentSession() {
   const saved = localStorage.getItem('nesaau_member');
 
@@ -262,7 +228,6 @@ function loadStudentSession() {
 
   const member = JSON.parse(saved);
 
-  // Always re-fetch fresh status from DB
   supabase
     .from('members')
     .select('*')
@@ -279,7 +244,6 @@ function loadStudentSession() {
       window._nesaauMember = data;
       applySession(data);
 
-      // If dues is pending or paid, skip to the right dues state
       if (data.dues_status === 'pending' || data.dues_status === 'paid') {
         showDuesStateOnLoad(data.dues_status);
       }
@@ -287,9 +251,7 @@ function loadStudentSession() {
 }
 
 function showDuesStateOnLoad(status) {
-  // Keep the portal visible but show correct step
   if (status === 'pending') {
-    // Show a "payment under review" message instead of the form
     const step1 = document.getElementById('duesStep1');
     const step2 = document.getElementById('duesStep2');
     const step3 = document.getElementById('duesStep3');
@@ -309,7 +271,6 @@ function showDuesStateOnLoad(status) {
         </p>
       `;
     }
-    // Update steps bar
     const s1 = document.getElementById('stepItem1');
     const s2 = document.getElementById('stepItem2');
     const s3 = document.getElementById('stepItem3');
@@ -319,7 +280,6 @@ function showDuesStateOnLoad(status) {
   }
 
   if (status === 'paid') {
-    // Show a paid confirmation
     const step1 = document.getElementById('duesStep1');
     const step2 = document.getElementById('duesStep2');
     const step3 = document.getElementById('duesStep3');
@@ -338,13 +298,11 @@ function showDuesStateOnLoad(status) {
     }
   }
 }
-// --- Helper ---
 function showAuthMsg(el, type, text) {
   el.className = 'auth-msg ' + type;
   el.innerHTML = text;
 }
 
-// --- Run on page load ---
 document.addEventListener('DOMContentLoaded', loadStudentSession);
 function updateSidebarAuth(member) {
   const sbLogin    = document.getElementById('sbLoginLink');
@@ -360,7 +318,6 @@ function updateSidebarAuth(member) {
   if (!sbLogin) return;
 
   if (member) {
-    // Logged in
     sbLogin.style.display  = 'none';
     sbDues.style.display   = 'none';
     sbInfo.style.display   = 'flex';
@@ -386,7 +343,6 @@ function updateSidebarAuth(member) {
       }
     }
   } else {
-    // Logged out
     sbLogin.style.display  = 'flex';
     sbDues.style.display   = 'flex';
     sbInfo.style.display   = 'none';
