@@ -1,4 +1,15 @@
-
+function toggleAdminSidebar() {
+  const sidebar  = document.getElementById('adminSidebar');
+  const overlay  = document.getElementById('adminSidebarOverlay');
+  const isOpen   = sidebar.classList.contains('mobile-open');
+  if (isOpen) {
+    closeAdminSidebar();
+  } else {
+    sidebar.classList.add('mobile-open');
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+}
 async function hashPassword(password) {
   const buf = await crypto.subtle.digest(
     'SHA-256', new TextEncoder().encode(password)
