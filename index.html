@@ -101,7 +101,39 @@
     <a href="#executives"   onclick="closeSidebar()"><span>03</span> Executives</a>
     <a href="#academics"    onclick="closeSidebar()"><span>04</span> Academics</a>
     <a href="#constitution" onclick="closeSidebar()"><span>05</span> Constitution</a>
-    <a href="#dues"         onclick="closeSidebar()" class="sb-dues-link">Pay Dues</a>
+
+    <!-- =====================================================
+         NESAAU ADDITION: Auth links inside sidebar for mobile
+         ===================================================== -->
+    <div class="sb-divider"></div>
+
+    <!-- Logged out state -->
+    <a href="#" class="sb-auth-link" id="sbLoginLink"
+       onclick="closeSidebar(); openAuthModal();">
+      <span>&#128274;</span> Login to Account
+    </a>
+    <a href="#dues" class="sb-dues-link" id="sbDuesLink"
+       onclick="closeSidebar()">
+      &#128179; Pay Dues
+    </a>
+
+<div class="sb-student-info" id="sbStudentInfo" style="display:none;">
+  <div class="sb-student-avatar" id="sbStudentAvatar">
+    <img src="logo.jpeg" class="sb-avatar-img" alt="Student">
+  </div>
+  <div class="sb-student-text">
+    <strong id="sbStudentName">Kenny Lasisi</strong>
+    <small id="sbStudentMatric">22/0000 · 400 Level</small>
+    <span class="sb-dues-pill" id="sbDuesPill">Dues Not Paid</span>
+  </div>
+</div>
+
+<a href="#dues" class="sb-dues-link" id="sbMyDuesLink" style="display:none;" onclick="closeSidebar()">
+  <i class="fa-solid fa-credit-card"></i> My Dues
+</a>
+<a href="#" class="sb-logout-link" id="sbLogoutLink" style="display:none;" onclick="closeSidebar(); logoutStudent();">
+  <i class="fa-solid fa-right-from-bracket"></i> Logout
+</a>
   </nav>
   <div class="sidebar-footer">
     <p>&#169; 2025 NESAAU. All rights reserved.</p>
