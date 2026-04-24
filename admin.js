@@ -10,9 +10,6 @@ async function hashPassword(password) {
 let allSubmissions = [];
 let allMembers     = [];
 
-// ============================================================
-// ADMIN LOGIN / LOGOUT
-// ============================================================
 async function adminLogin() {
   const email    = document.getElementById('adminEmail').value.trim();
   const password = document.getElementById('adminPassword').value;
@@ -52,7 +49,6 @@ function adminLogout() {
 function showDashboard() {
   document.getElementById('adminLoginScreen').style.display = 'none';
   document.getElementById('adminDashboard').style.display  = 'flex';
-  // Load default panel
   loadSubmissions();
 }
 
@@ -63,9 +59,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// ============================================================
-// PANEL SWITCHING — single clean function, no overrides
-// ============================================================
 function showPanel(name, btn) {
   document.querySelectorAll('.admin-panel')
     .forEach(p => p.classList.remove('active'));
@@ -85,9 +78,6 @@ function showPanel(name, btn) {
   if (name === 'spotlight')     loadAdminSpotlight();
 }
 
-// ============================================================
-// DUES SUBMISSIONS
-// ============================================================
 async function loadSubmissions() {
   const container = document.getElementById('submissionsList');
   if (!container) return;
@@ -163,7 +153,6 @@ function renderSubmissions(list) {
 }
 
 async function updateSubmission(submissionId, memberId, newStatus) {
-  // Update submission
   const { error: subErr } = await supabase
     .from('dues_submissions')
     .update({ status: newStatus })
@@ -171,7 +160,6 @@ async function updateSubmission(submissionId, memberId, newStatus) {
 
   if (subErr) { alert('Error updating submission: ' + subErr.message); return; }
 
-  // Update member dues_status
   const { error: memErr } = await supabase
     .from('members')
     .update({ dues_status: newStatus })
@@ -179,7 +167,6 @@ async function updateSubmission(submissionId, memberId, newStatus) {
 
   if (memErr) { alert('Error updating member: ' + memErr.message); return; }
 
-  // Refresh
   loadSubmissions();
   loadStats();
 }
@@ -191,9 +178,6 @@ function statusLabel(s) {
   return s;
 }
 
-// ============================================================
-// ALL MEMBERS
-// ============================================================
 async function loadMembers() {
   const tbody = document.getElementById('membersTableBody');
   if (!tbody) return;
@@ -267,9 +251,6 @@ async function manualUpdateStatus(memberId, newStatus) {
   loadStats();
 }
 
-// ============================================================
-// STATS
-// ============================================================
 async function loadStats() {
   const { data, error } = await supabase
     .from('members')
@@ -301,16 +282,10 @@ async function resetSession() {
   loadStats();
 }
 
-// ============================================================
-// EXEC CMS (legacy — from original build)
-// ============================================================
 async function loadExecCms() {
   loadCurrentExecAdmin();
 }
 
-// ============================================================
-// CURRENT EXECUTIVES
-// ============================================================
 async function loadCurrentExecAdmin() {
   const list = document.getElementById('currentExecList');
   if (!list) return;
@@ -426,9 +401,6 @@ async function deleteCurrentExec(id) {
   loadCurrentExecAdmin();
 }
 
-// ============================================================
-// PAST ADMINISTRATIONS
-// ============================================================
 async function archiveCurrentExecs() {
   const adminName = document.getElementById('archiveName').value.trim();
   const year      = document.getElementById('archiveYear').value.trim();
@@ -479,7 +451,6 @@ async function archiveCurrentExecs() {
     }))
   );
 
-  // Clear current executives
   for (const ex of currentExecs) {
     await supabase.from('current_executives').delete().eq('id', ex.id);
   }
@@ -532,9 +503,6 @@ async function deletePastAdmin(id) {
   loadPastAdminAdmin();
 }
 
-// ============================================================
-// ANNOUNCEMENTS
-// ============================================================
 async function postAnnouncement() {
   const title     = document.getElementById('annTitle').value.trim();
   const type      = document.getElementById('annType').value;
@@ -611,9 +579,6 @@ async function deleteAnnouncement(id) {
   loadAdminAnnouncements();
 }
 
-// ============================================================
-// SPOTLIGHT
-// ============================================================
 async function postSpotlight() {
   const name     = document.getElementById('spName').value.trim();
   const role     = document.getElementById('spRole').value.trim();
@@ -634,7 +599,6 @@ async function postSpotlight() {
   msg.className = 'admin-form-msg success';
   msg.innerHTML = '⏳ Posting spotlight...';
 
-  // Deactivate previous spotlights
   await supabase
     .from('personnel_spotlight')
     .update({ active: false })
@@ -711,9 +675,6 @@ async function deleteSpotlight(id) {
   loadAdminSpotlight();
 }
 
-// ============================================================
-// HELPER
-// ============================================================
 function showAdminMsg(el, type, text) {
   el.className     = 'auth-msg ' + type;
   el.innerHTML     = text;
