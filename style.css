@@ -2028,8 +2028,8 @@ input, select { font-family:inherit; }
  
 @media (max-width:768px) {
   .section { padding:64px 0; }
-  .nav-links { display:none; }
-  .btn-dues-nav { display:none; }
+  .nav-links  { display:none; }
+  .nav-auth-btns { display:none; }
   .hamburger { display:flex; }
   .hero-stats { padding:16px 20px; }
   .hstat { padding:0 12px; }
