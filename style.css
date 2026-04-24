@@ -2055,3 +2055,47 @@ input, select { font-family:inherit; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration:.01ms !important; transition-duration:.01ms !important; }
 }
+
+.navbar {
+  background: #001f3f; /* Your deep blue */
+  padding: 10px 20px;
+  position: relative;
+  z-index: 1000;
+}
+
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Identity Section */
+.nav-identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--gold);
+  object-fit: cover;
+}
+
+.nav-user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  color: white;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.user-meta {
+  color: #a0aec0;
+  font-size: 0.75rem;
+}
