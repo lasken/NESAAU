@@ -16,8 +16,6 @@
 </head>
 <body>
 
-<!-- ===== ADMIN LOGIN SCREEN ===== -->
-<!-- NESAAU ADDITION: Shown before admin is authenticated -->
 <div class="admin-login-screen" id="adminLoginScreen">
   <div class="admin-login-card">
     <div class="admin-login-logo">
@@ -39,11 +37,8 @@
   </div>
 </div>
 
-<!-- ===== ADMIN DASHBOARD ===== -->
-<!-- NESAAU ADDITION: Hidden until admin is authenticated -->
 <div class="admin-dashboard" id="adminDashboard" style="display:none;">
 
-  <!-- Sidebar -->
   <aside class="admin-sidebar">
     <div class="admin-sidebar-brand">
       <div class="admin-ring"><span>N</span></div>
@@ -83,7 +78,6 @@
   </div>
   </aside>
 
-  <!-- ===== PANEL: ANNOUNCEMENTS ===== -->
   <div class="admin-panel" id="panel-announcements">
   <div class="admin-panel-hdr">
     <div class="hdr-title-flex">
@@ -96,7 +90,6 @@
     </div>
   </div>
 
-  <!-- Create new announcement -->
   <div class="admin-create-card">
     <h3>Post New Announcement</h3>
     <div class="form-row">
@@ -131,13 +124,11 @@
     </div>
   </div>
 
-  <!-- Existing announcements -->
   <div class="admin-list" id="annAdminList">
     <div class="loading-state">Loading announcements...</div>
   </div>
 </div>
 
-<!-- ===== PANEL: SPOTLIGHT ===== -->
 <div class="admin-panel" id="panel-spotlight">
   <div class="admin-panel-hdr">
     <div class="hdr-title-flex">
@@ -192,17 +183,13 @@
     </div>
   </div>
 
-  <!-- Current spotlight preview -->
   <div class="admin-list" id="spAdminList">
     <div class="loading-state">Loading current spotlight...</div>
   </div>
 </div>
 
-  <!-- Main Content -->
   <main class="admin-main">
 
-    <!-- ===== PANEL: DUES SUBMISSIONS ===== -->
-    <!-- NESAAU ADDITION: Where excos approve/reject payments -->
     <div class="admin-panel active" id="panel-submissions">
     <div class="admin-panel-hdr">
       <div class="hdr-title-flex">
@@ -235,8 +222,6 @@
       </div>
     </div>
 
-    <!-- ===== PANEL: ALL MEMBERS ===== -->
-    <!-- NESAAU ADDITION: Full member directory -->
     <div class="admin-panel" id="panel-members">
       <div class="admin-panel-hdr">
         <div class="hdr-title-flex">
@@ -269,7 +254,6 @@
       </div>
     </div>
 
-    <!-- ===== PANEL: CURRENT EXECUTIVES ===== -->
     <div class="admin-panel" id="panel-executives">
       <div class="admin-panel-hdr">
         <div class="hdr-title-flex">
@@ -282,7 +266,6 @@
         </div>
       </div>
 
-      <!-- Add new exec form -->
       <div class="admin-create-card">
         <h3>Add New Executive</h3>
         <div class="form-row">
@@ -310,13 +293,11 @@
         <div class="admin-form-msg" id="addExecMsg"></div>
       </div>
 
-      <!-- Current exec list -->
       <div class="admin-list" id="currentExecList">
         <div class="loading-state">Loading executives...</div>
       </div>
     </div>
 
-    <!-- ===== PANEL: PAST ADMINISTRATIONS ===== -->
     <div class="admin-panel" id="panel-pastadmins">
       <div class="admin-panel-hdr">
         <div class="hdr-title-flex">
@@ -329,7 +310,6 @@
         </div>
       </div>
 
-      <!-- Archive action -->
       <div class="admin-create-card">
         <h3>Start New Administration</h3>
         <p style="font-size:.85rem;color:var(--gray);margin-bottom:20px;">
@@ -352,14 +332,11 @@
         <div class="admin-form-msg" id="archiveMsg"></div>
       </div>
 
-      <!-- Past administrations list -->
       <div class="admin-list" id="pastAdminAdminList">
         <div class="loading-state">Loading past administrations...</div>
       </div>
     </div>
 
-    <!-- ===== PANEL: STATS ===== -->
-    <!-- NESAAU ADDITION: Live dashboard stats -->
     <div class="admin-panel" id="panel-stats">
       <div class="admin-panel-hdr">
         <div class="hdr-title-flex">
