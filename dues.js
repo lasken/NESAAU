@@ -1,6 +1,4 @@
-// ============================================================
-// NESAAU — dues.js
-// ============================================================
+
 const supabase = window._sb;
 
 async function submitPayment() {
@@ -25,7 +23,6 @@ async function submitPayment() {
   const ext       = file.name.split('.').pop();
   const fileName  = `receipts/${safeName}-${Date.now()}.${ext}`;
 
-  // --- Upload to Supabase Storage ---
   const { data: uploadData, error: uploadError } = await supabase
     .storage
     .from('dues-receipts')
@@ -35,14 +32,12 @@ async function submitPayment() {
     });
 
   if (uploadError) {
-    // If storage fails, still save the submission without the URL
-    // so the exco knows someone paid even if photo upload failed
+
     console.warn('Storage upload failed:', uploadError.message);
     await saveSubmission(member, null, msg);
     return;
   }
 
-  // --- Get public URL ---
   const { data: urlData } = supabase
     .storage
     .from('dues-receipts')
@@ -53,7 +48,6 @@ async function submitPayment() {
 }
 
 async function saveSubmission(member, receiptUrl, msg) {
-  // --- Save submission to database ---
   const { error: insertError } = await supabase
     .from('dues_submissions')
     .insert({
@@ -71,18 +65,15 @@ async function saveSubmission(member, receiptUrl, msg) {
     return;
   }
 
-  // --- Update member status to pending ---
   await supabase
     .from('members')
     .update({ dues_status: 'pending' })
     .eq('id', member.id);
 
-  // --- Update localStorage with new status ---
   const updatedMember = { ...member, dues_status: 'pending' };
   localStorage.setItem('nesaau_member', JSON.stringify(updatedMember));
   window._nesaauMember = updatedMember;
 
-  // --- Show step 3 ---
   document.getElementById('stepItem2').classList.remove('active');
   document.getElementById('stepItem2').classList.add('done');
   document.getElementById('stepItem3').classList.add('active');
@@ -91,7 +82,6 @@ async function saveSubmission(member, receiptUrl, msg) {
   document.getElementById('duesStep3')
     .scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-  // --- Update toast ---
   const pill = document.getElementById('duesStatusPill');
   if (pill) {
     pill.textContent = '⏳ Payment Under Review';
