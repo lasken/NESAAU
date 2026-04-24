@@ -62,22 +62,22 @@
       <div><strong>NESAAU</strong><small>Admin Panel</small></div>
     </div>
     <nav class="admin-nav">
-  <a href="#" class="admin-nav-link active" onclick="showPanel('submissions', this)">
+  <a href="javascript:void(0)" class="admin-nav-link" onclick="showPanel('submissions', this)">
     <i class="fa-solid fa-file-invoice-dollar"></i> Dues Submissions
   </a>
-  <a href="#" class="admin-nav-link" onclick="showPanel('members', this)">
+  <a href="javascript:void(0)" class="admin-nav-link" onclick="showPanel('members', this)">
     <i class="fa-solid fa-users"></i> All Members
   </a>
-  <a href="#" class="admin-nav-link" onclick="showPanel('executives', this)">
+  <a href="javascript:void(0)" class="admin-nav-link" onclick="showPanel('executives', this)">
     <i class="fa-solid fa-user-tie"></i> Current Executives
   </a>
-  <a href="#" class="admin-nav-link" onclick="showPanel('pastadmins', this)">
+  <a href="javascript:void(0)" class="admin-nav-link" onclick="showPanel('pastadmins', this)">
     <i class="fa-solid fa-clock-rotate-left"></i> Past Administrations
   </a>
-  <a href="#" class="admin-nav-link" onclick="showPanel('stats', this)">
+  <a href="javascript:void(0)" class="admin-nav-link" onclick="showPanel('stats', this)">
     <i class="fa-solid fa-chart-line"></i> Stats
   </a>
-  <a href="#" class="admin-nav-link" onclick="showPanel('announcements', this)">
+  <a href="javascript:void(0)" class="admin-nav-link" onclick="showPanel('announcements', this)">
     <i class="fa-solid fa-bullhorn"></i> Announcements
   </a>
   <a href="#" class="admin-nav-link" onclick="showPanel('spotlight', this)">
@@ -95,7 +95,9 @@
   </div>
   </aside>
 
-  <div class="admin-panel" id="panel-announcements">
+  <main class="admin-main">
+
+      <div class="admin-panel" id="panel-announcements">
   <div class="admin-panel-hdr">
     <div class="hdr-title-flex">
       <img src="logo.jpeg" class="panel-hdr-logo" alt="NESAAU Logo">
@@ -115,7 +117,7 @@
     </div>
     <div class="form-row">
       <label>Type</label>
-    <div class="form-group">
+      <div class="form-group">
       <label for="annType">Announcement Category</label>
       <select id="annType" class="admin-select">
         <option value="General">General Update</option>
@@ -127,9 +129,11 @@
     </div>
     </div>
     <div class="form-row">
-      <label>Description</label>
-      <textarea id="annDesc" rows="4" placeholder="Full details of the announcement..."></textarea>
+      <label>Event Date (optional)</label>
+      <input type="text" id="annEventDate" placeholder="e.g. Friday, 16th May 2025 — 10:00 AM"/>
     </div>
+
+    <div class="form-actions">
     <div class="form-row">
       <label>Event Date (optional)</label>
       <input type="text" id="annEventDate" placeholder="e.g. Friday, 16th May 2025 — 10:00 AM"/>
@@ -192,6 +196,8 @@
     <div class="form-row">
       <label>Photo</label>
       <input type="file" id="spPhoto" accept="image/*"/>
+    </div>
+
     <div class="form-actions">
       <button class="btn-admin-action spotlight-btn" onclick="postSpotlight()">
         <i class="fa-solid fa-medal"></i> Post Spotlight
@@ -204,8 +210,6 @@
     <div class="loading-state">Loading current spotlight...</div>
   </div>
 </div>
-
-  <main class="admin-main">
 
     <div class="admin-panel active" id="panel-submissions">
     <div class="admin-panel-hdr">
@@ -233,11 +237,10 @@
           <i class="fa-solid fa-circle-xmark"></i> Rejected
         </button>
       </div>
-    </div>
       <div class="submissions-list" id="submissionsList">
         <div class="loading-state">Loading submissions...</div>
       </div>
-    </div>
+      </div> 
 
     <div class="admin-panel" id="panel-members">
       <div class="admin-panel-hdr">
