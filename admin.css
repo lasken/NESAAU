@@ -614,3 +614,20 @@ img { max-width: 100%; display: block; }
   .filter-bar { gap: 6px; }
   .filter-btn { padding: 6px 12px; font-size: .75rem; }
 }
+
+.btn-notify-student {
+  background: #25d366;
+  color: #fff;
+  padding: 7px 14px;
+  border-radius: var(--radius);
+  font-size: .8rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  transition: all .2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-notify-student:hover { background: #128c7e; }
