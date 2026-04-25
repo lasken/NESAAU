@@ -1,4 +1,4 @@
-let membersCache = null;
+
 function toggleAdminSidebar() {
   const sidebar  = document.getElementById('adminSidebar');
   const overlay  = document.getElementById('adminSidebarOverlay');
@@ -80,31 +80,42 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function showPanel(name, btn) {
-
-  console.log("SWITCHING TO:", name);
-
-  document.querySelectorAll('.admin-panel')
-    .forEach(p => p.classList.remove('active'));
-
-  document.querySelectorAll('.admin-nav-link')
-    .forEach(l => l.classList.remove('active'));
+  function showPanel(name, btn) {
+  document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.admin-nav-link').forEach(l => l.classList.remove('active'));
 
   const panel = document.getElementById('panel-' + name);
-  if (panel) panel.classList.add('active');
+  
+  if (panel) {
+    panel.classList.add('active');
+  } else {
+    console.error("Could not find panel with ID: panel-" + name);
+  }
 
   if (btn) btn.classList.add('active');
 
   if (window.innerWidth < 768) closeAdminSidebar();
 
-  switch (name) {
-    case 'submissions': loadSubmissions(); break;
-    case 'members': loadMembers(); break;
-    case 'stats': loadStats(); break;
-    case 'executives': loadCurrentExecAdmin(); break;
-    case 'pastadmins': loadPastAdminAdmin(); break;
-    case 'announcements': loadAdminAnnouncements(); break;
-    case 'spotlight': loadAdminSpotlight(); break;
-  }
+  if (name === 'members') loadMembers();
+  if (name === 'stats') loadStats();
+}
+  closeAdminSidebar();
+  document.querySelectorAll('.admin-panel')
+    .forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.admin-nav-link')
+    .forEach(l => l.classList.remove('active'));
+
+  const panel = document.getElementById('panel-' + name);
+  if (panel) panel.classList.add('active');
+  if (btn)   btn.classList.add('active');
+
+  if (name === 'submissions')   loadSubmissions();
+  if (name === 'members')       loadMembers();
+  if (name === 'stats')         loadStats();
+  if (name === 'executives')    loadCurrentExecAdmin();
+  if (name === 'pastadmins')    loadPastAdminAdmin();
+  if (name === 'announcements') loadAdminAnnouncements();
+  if (name === 'spotlight')     loadAdminSpotlight();
 }
 
 async function loadSubmissions() {
@@ -196,14 +207,8 @@ async function updateSubmission(submissionId, memberId, newStatus) {
 
   if (memErr) { alert('Error updating member: ' + memErr.message); return; }
 
-const row = document.getElementById('sub-' + submissionId);
-if (row) {
-  row.querySelector('.sub-status-badge').textContent = statusLabel(newStatus);
-  row.classList.remove('pending', 'paid', 'rejected');
-  row.classList.add(newStatus);
-}
-
-setTimeout(loadStats, 300);
+  loadSubmissions();
+  loadStats();
 }
 
 function statusLabel(s) {
@@ -213,29 +218,29 @@ function statusLabel(s) {
   return s;
 }
 
-async function loadMembers(force = false) {
+async function loadMembers() {
   const tbody = document.getElementById('membersTableBody');
   if (!tbody) return;
-
-  if (membersCache && !force) {
-    renderMembers(membersCache);
-    return;
-  }
-
   tbody.innerHTML = '<tr><td colspan="5" class="loading-state">Loading members...</td></tr>';
 
   const { data, error } = await supabase
     .from('members')
-    .select('id, full_name, matric_number, level, dues_status')
+    .select('*')
     .order('full_name');
 
   if (error) {
-    tbody.innerHTML = `<tr><td colspan="5">❌ ${error.message}</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="5" class="empty-state">❌ ${error.message}</td></tr>`;
     return;
   }
 
-  membersCache = data || [];
-  renderMembers(membersCache);
+  allMembers = data || [];
+
+  if (!allMembers.length) {
+    tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No members registered yet.</td></tr>';
+    return;
+  }
+
+  renderMembers(allMembers);
 }
 
 function filterMembers() {
@@ -282,8 +287,8 @@ async function manualUpdateStatus(memberId, newStatus) {
     .from('members')
     .update({ dues_status: newStatus })
     .eq('id', memberId);
-
-  setTimeout(loadStats, 200);
+  loadMembers();
+  loadStats();
 }
 
 async function loadStats() {
