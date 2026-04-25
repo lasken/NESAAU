@@ -1,4 +1,3 @@
-
 const supabase = window._sb;
 
 async function submitPayment() {
@@ -32,7 +31,6 @@ async function submitPayment() {
     });
 
   if (uploadError) {
-
     console.warn('Storage upload failed:', uploadError.message);
     await saveSubmission(member, null, msg);
     return;
@@ -55,7 +53,7 @@ async function saveSubmission(member, receiptUrl, msg) {
       full_name:     member.full_name,
       matric_number: member.matric_number,
       level:         member.level,
-      session:       '2024/2025',
+      session:       '2025/2026',
       receipt_url:   receiptUrl,
       status:        'pending'
     });
@@ -74,6 +72,8 @@ async function saveSubmission(member, receiptUrl, msg) {
   localStorage.setItem('nesaau_member', JSON.stringify(updatedMember));
   window._nesaauMember = updatedMember;
 
+  notifyFinSecWhatsApp(member);
+
   document.getElementById('stepItem2').classList.remove('active');
   document.getElementById('stepItem2').classList.add('done');
   document.getElementById('stepItem3').classList.add('active');
@@ -83,11 +83,44 @@ async function saveSubmission(member, receiptUrl, msg) {
     .scrollIntoView({ behavior: 'smooth', block: 'start' });
 
   const pill = document.getElementById('duesStatusPill');
-  if (pill) {
-    pill.textContent = '⏳ Payment Under Review';
-    pill.className   = 'dues-status-pill pending';
+if (member.dues_status === 'paid') {
+    pill.innerHTML = '<i class="fa-solid fa-circle-check"></i> Dues Paid — 2025/2026';
+    pill.className = 'dues-status-pill paid';
+  } else if (member.dues_status === 'pending') {
+    pill.innerHTML = '<i class="fa-solid fa-clock"></i> Payment Under Review';
+    pill.className = 'dues-status-pill pending';
+  } else {
+    pill.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> Dues Not Paid';
+    pill.className = 'dues-status-pill unpaid';
   }
+}
 
-  // --- Update nav student info toast ---
-  showDuesToast('pending');
+
+const FIN_SEC_WHATSAPP = '2348159718496';
+
+function notifyFinSecWhatsApp(member) {
+  const now = new Date().toLocaleString('en-NG', {
+    day:    'numeric',
+    month:  'short',
+    year:   'numeric',
+    hour:   '2-digit',
+    minute: '2-digit'
+  });
+
+  let message = `💳 *NESAAU DUES SUBMISSION*\n`;
+  message += `━━━━━━━━━━━━━━━━━━━━━\n`;
+  message += `*Name:*    ${member.full_name}\n`;
+  message += `*Matric:*  ${member.matric_number}\n`;
+  message += `*Level:*   ${member.level} Level\n`;
+  message += `*Session:* 2025/2026\n`;
+  message += `*Time:*    ${now}\n`;
+  message += `━━━━━━━━━━━━━━━━━━━━━\n`;
+  message += `Receipt has been uploaded to the portal.\n`;
+  message += `Please verify and confirm payment.\n\n`;
+  message += `🔗 Admin Panel: ${window.location.origin}/admin.html\n`;
+  message += `━━━━━━━━━━━━━━━━━━━━━\n`;
+  message += `_Sent automatically via NESAAU Website_`;
+
+  const url = `https://wa.me/${FIN_SEC_WHATSAPP}?text=${encodeURIComponent(message)}`;
+  window.open(url, '_blank');
 }
