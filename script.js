@@ -164,7 +164,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     const target = document.querySelector(this.getAttribute('href'));
     if (target) {
       e.preventDefault();
-      const offset = 72;
+      const offset = 72; 
       const top = target.getBoundingClientRect().top + window.scrollY - offset;
       window.scrollTo({ top, behavior: 'smooth' });
     }
@@ -230,29 +230,29 @@ function showDownloadToast(type) {
 
   const types = {
     login: {
-      icon: '🔐',
+      icon: '<i class="fa-solid fa-lock"></i>',
       text: 'Please login to download materials',
       cls:  'unpaid'
     },
     unpaid: {
-      icon: '💳',
+      icon: '<i class="fa-solid fa-credit-card"></i>',
       text: 'Pay your dues to access downloadable materials',
       cls:  'unpaid'
     },
     unavailable: {
-      icon: '⏳',
+      icon: '<i class="fa-solid fa-clock"></i>',
       text: 'This file is not yet available. Check back soon.',
       cls:  'pending'
     },
     success: {
-      icon: '✅',
+      icon: '<i class="fa-solid fa-circle-check"></i>',
       text: 'Download started successfully!',
       cls:  'paid'
     }
   };
 
   const t = types[type] || types.unavailable;
-  icon.textContent = t.icon;
+  icon.innerHTML = t.icon;
   msg.textContent  = t.text;
   toast.classList.add(t.cls);
 
