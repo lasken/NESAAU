@@ -26,6 +26,7 @@
     <button class="auth-tab active" onclick="switchAuthTab('login', this)">Login</button>
     <button class="auth-tab" onclick="switchAuthTab('register', this)">Register</button>
   </div>
+  <!-- Login Form -->
   <div class="auth-form" id="authLogin">
     <div class="form-row">
       <label>Matriculation Number</label>
@@ -58,6 +59,11 @@
       </select>
     </div>
     <div class="form-row">
+      <label>WhatsApp Number</label>
+      <input type="tel" id="regPhone" placeholder="e.g. 08012345678" autocomplete="off"/>
+      <span class="form-hint">Used to receive dues confirmation from excos</span>
+    </div>
+    <div class="form-row">
       <label>Password</label>
       <input type="password" id="regPassword" placeholder="Create a password (min. 6 chars)"/>
     </div>
@@ -70,6 +76,87 @@
   <span class="toast-icon" id="toastIcon">&#10060;</span>
   <div class="toast-msg" id="toastMsg">Dues Not Paid</div>
   <button class="toast-close" onclick="closeToast()">&#10005;</button>
+</div>
+
+<div class="auth-modal-overlay" id="profileModalOverlay"
+     onclick="closeProfileModal()"></div>
+<div class="profile-modal" id="profileModal" aria-hidden="true">
+
+  <button class="auth-modal-close" onclick="closeProfileModal()">&#10005;</button>
+
+  <div class="pm-photo-section">
+    <div class="pm-photo-wrap" onclick="document.getElementById('pmPhotoInput').click()">
+      <div class="pm-photo-inner" id="pmPhotoInner">
+        <span class="pm-initials" id="pmInitials">--</span>
+        <img class="pm-photo-img" id="pmPhotoImg" src="" alt=""
+             style="display:none;"/>
+      </div>
+      <div class="pm-photo-overlay">
+        <i class="fa-solid fa-camera"></i>
+        <span>Change Photo</span>
+      </div>
+    </div>
+    <input type="file" id="pmPhotoInput" accept="image/*"
+           onchange="previewProfilePhoto(this)" style="display:none;"/>
+    <p class="pm-photo-hint">Tap photo to change</p>
+  </div>
+
+  <div class="pm-fields">
+    <div class="pm-field-group">
+      <label>
+        <i class="fa-solid fa-user"></i> Full Name
+        <span class="pm-locked-badge">
+          <i class="fa-solid fa-lock"></i> Locked
+        </span>
+      </label>
+      <div class="pm-locked-field" id="pmFullName">—</div>
+    </div>
+    <div class="pm-field-group">
+      <label>
+        <i class="fa-solid fa-id-card"></i> Matriculation Number
+        <span class="pm-locked-badge">
+          <i class="fa-solid fa-lock"></i> Locked
+        </span>
+      </label>
+      <div class="pm-locked-field" id="pmMatric">—</div>
+    </div>
+    <div class="pm-field-group">
+      <label>
+        <i class="fa-solid fa-graduation-cap"></i> Level
+        <span class="pm-locked-badge">
+          <i class="fa-solid fa-lock"></i> Locked
+        </span>
+      </label>
+      <div class="pm-locked-field" id="pmLevel">—</div>
+    </div>
+
+    <div class="pm-field-group">
+      <label>
+        <i class="fa-brands fa-whatsapp"></i> WhatsApp Number
+        <span class="pm-edit-badge">Editable</span>
+      </label>
+      <input type="tel" class="pm-edit-field" id="pmPhone"
+             placeholder="e.g. 08012345678"
+             autocomplete="off"/>
+      <span class="form-hint">
+        Used to receive dues confirmation from the Treasurer
+      </span>
+    </div>
+
+    <div class="pm-dues-status-row" id="pmDuesStatusRow">
+      <i class="fa-solid fa-receipt"></i>
+      <div>
+        <span class="pm-dues-label">Dues Status</span>
+        <span class="pm-dues-value" id="pmDuesStatus">—</span>
+      </div>
+    </div>
+  </div>
+
+  <button class="pm-save-btn" onclick="saveProfile()">
+    <i class="fa-solid fa-floppy-disk"></i> Save Changes
+  </button>
+  <div class="auth-msg" id="pmMsg"></div>
+
 </div>
 
 <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
@@ -94,12 +181,12 @@
 
     <a href="#" class="sb-auth-link" id="sbLoginLink"
        onclick="closeSidebar(); openAuthModal();">
-      <span>&#128274;</span> Login to Account
+      <i class="fa-solid fa-right-to-bracket"></i> Login to Account
     </a>
     <a href="#dues" class="sb-dues-link" id="sbDuesLink"
-       onclick="closeSidebar()">
-      &#128179; Pay Dues
-    </a>
+          onclick="closeSidebar()">
+          <i class="fa-solid fa-credit-card"></i> Pay Dues
+        </a>
 
 <div class="sb-student-info" id="sbStudentInfo" style="display:none;">
   <div class="sb-student-avatar" id="sbStudentAvatar">
@@ -115,6 +202,11 @@
 <a href="#dues" class="sb-dues-link" id="sbMyDuesLink" style="display:none;" onclick="closeSidebar()">
   <i class="fa-solid fa-credit-card"></i> My Dues
 </a>
+<a href="#" class="sb-auth-link" id="sbProfileLink"
+       style="display:none;"
+       onclick="closeSidebar(); openProfileModal();">
+      <i class="fa-solid fa-circle-user"></i> My Profile
+    </a>
 <a href="#" class="sb-logout-link" id="sbLogoutLink" style="display:none;" onclick="closeSidebar(); logoutStudent();">
   <i class="fa-solid fa-right-from-bracket"></i> Logout
 </a>
@@ -145,7 +237,7 @@
 
 <div class="announce-bar">
   <div class="container announce-inner">
-    <span class="announce-pill">NOTICE</span>
+    <span class="announce-pill"><i class="fa-solid fa-bullhorn"></i>NOTICE</span>
     <span>Dues payment for 2025/2026 academic session is NOW OPEN. Pay before exam clearance.</span>
     <a href="#dues">Pay Now &rarr;</a>
   </div>
@@ -163,7 +255,11 @@
     </a>
 
     <div class="nav-student-info" id="navStudentInfo" style="display:none;">
-      <div class="nav-student-avatar" id="navStudentAvatar">--</div>
+      <button class="nav-avatar-btn" id="navStudentAvatar"
+              onclick="openProfileModal()"
+              title="View / Edit Profile">
+        --
+      </button>
       <div class="nav-brand-text">
         <strong id="navStudentName"></strong>
         <small id="navStudentSub"></small>
@@ -196,7 +292,9 @@
   <div class="hero-overlay"></div>
   <div class="container hero-inner">
     <div class="hero-content">
-      <div class="hero-badge">&#127963; Est. 2018 &nbsp;&bull;&nbsp; Adeleke University, Ede &nbsp;&bull;&nbsp; Osun State, Nigeria</div>
+      <div class="hero-badge">
+        <i class="fa-solid fa-landmark"></i> Est. 2018 &nbsp;&bull;&nbsp; Adeleke University, Ede &nbsp;&bull;&nbsp; Osun State, Nigeria
+      </div>
       <h1 class="hero-title">
         Empowering<br/>
         <span class="hero-gold">Future Economists</span>
@@ -386,7 +484,7 @@
       </div>
       <div class="exec-card">
         <div class="exec-img-wrap">
-          <img src="IMG-20260319-WA0022.jpg" alt="Treasurer" loading="lazy" onerror="this.style.background='#1a3a6b'"/>
+          <img src="TREAS.jpeg" alt="Treasurer" loading="lazy" onerror="this.style.background='#1a3a6b'"/>
           <div class="exec-badge">Treasurer</div>
         </div>
         <h3>Lasisi Ayokunmi</h3>
@@ -440,7 +538,7 @@
         <h3>Onyegbule Success</h3>
         <span>300 Level &bull; Economics</span>
 </div>
-      
+
         <div class="past-admin-wrap">
           <div class="past-admin-topbar">
             <span class="past-admin-count" id="pastAdminCount"></span>
@@ -715,13 +813,13 @@
 
             <div class="payment-card">
               <div class="payment-amt">
-                <span>Dues Amount (2025/2026 Session)</span>
-                <strong>₦2,000</strong>
+                <span>Monthly Dues — 2024/2025 Session</span>
+                <strong>&#8358;2,000 <small style="font-size:.65rem;font-weight:400;opacity:.7;">/ month</small></strong>
               </div>
               <div class="bank-detail-grid">
                 <div class="brow"><span>Bank</span><strong>Kuda</strong></div>
                 <div class="brow"><span>Account Name</span><strong>NESAAU Adeleke University</strong></div>
-                <div class="brow"><span>Account Number</span><strong>2071584018</strong><button class="copy-btn" onclick="copyAcct()">Copy</button></div>
+                <div class="brow"><span>Account Number</span><strong>2071584018</strong><button class="copy-btn" onclick="copyAcct()"><i class="fa-solid fa-copy"></i>Copy</button></div>
                 <div class="brow"><span>Narration</span><strong>NESAAU DUES – [Your Matric No.]</strong></div>
               </div>
                 <p class="pay-note">
