@@ -180,11 +180,17 @@ function renderSubmissions(list) {
         ${s.status === 'pending' ? `
           <button class="btn-approve"
             onclick="updateSubmission('${s.id}','${s.member_id}','paid')">
-            ✅ Approve
+            <i class="fa-solid fa-circle-check"></i> Approve
           </button>
           <button class="btn-reject"
             onclick="updateSubmission('${s.id}','${s.member_id}','rejected')">
-            ❌ Reject
+            <i class="fa-solid fa-circle-xmark"></i> Reject
+          </button>
+        ` : ''}
+        ${s.status === 'paid' ? `
+          <button class="btn-notify-student"
+            onclick="notifyStudentWhatsApp('${s.member_id}','${s.full_name}')">
+            <i class="fa-brands fa-whatsapp"></i> Notify Student
           </button>
         ` : ''}
       </div>
@@ -719,4 +725,47 @@ function showAdminMsg(el, type, text) {
   el.className     = 'auth-msg ' + type;
   el.innerHTML     = text;
   el.style.display = 'block';
+}
+
+async function notifyStudentWhatsApp(memberId, studentName) {
+  const { data: member, error } = await supabase
+    .from('members')
+    .select('full_name, matric_number, phone_number')
+    .eq('id', memberId)
+    .single();
+
+  if (error || !member) {
+    alert('Could not fetch student details.');
+    return;
+  }
+
+  if (!member.phone_number) {
+    const manual = prompt(
+      `${member.full_name} has no WhatsApp number saved.\nEnter their number manually (with country code, no +):`
+    );
+    if (!manual) return;
+    member.phone_number = manual.trim();
+  }
+
+  let phone = member.phone_number.replace(/\D/g, '');
+  if (phone.startsWith('0')) {
+    phone = '234' + phone.slice(1); 
+  }
+
+  let message = `✅ *NESAAU DUES PAYMENT CONFIRMED*\n`;
+  message += `━━━━━━━━━━━━━━━━━━━━━\n`;
+  message += `Hi *${member.full_name}*,\n\n`;
+  message += `Your dues payment for the *2025/2026* academic session has been verified and confirmed. ✅\n\n`;
+  message += `You now have *FULL member access:*\n`;
+  message += `• Past questions & notes unlocked\n`;
+  message += `• Exam clearance endorsed\n`;
+  message += `• All NESAAU events accessible\n`;
+  message += `• Departmental WhatsApp group access\n\n`;
+  message += `Thank you for being a responsible NESAAU member! 🎓\n`;
+  message += `━━━━━━━━━━━━━━━━━━━━━\n`;
+  message += `— *NESAAU Financial Secretary*\n`;
+  message += `_${new Date().toLocaleDateString('en-NG', { day:'numeric', month:'long', year:'numeric' })}_`;
+
+  const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+  window.open(url, '_blank');
 }
