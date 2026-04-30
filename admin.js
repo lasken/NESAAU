@@ -769,3 +769,189 @@ async function notifyStudentWhatsApp(memberId, studentName) {
   const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
   window.open(url, '_blank');
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  const fybImageInput = document.getElementById('fybImage');
+  if (fybImageInput) {
+    fybImageInput.addEventListener('change', function() {
+      const file = this.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        const wrap = document.getElementById('fybPreviewWrap');
+        const prev = document.getElementById('fybPreviewImg');
+        prev.src = e.target.result;
+        wrap.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+});
+
+async function loadFybAdmin() {
+  await loadFybCurrent();
+  await loadFybPast();
+}
+
+async function loadFybCurrent() {
+  const wrap = document.getElementById('fybAdminCurrent');
+  if (!wrap) return;
+
+  const { data } = await supabase
+    .from('fyb_students')
+    .select('*')
+    .eq('status', 'current')
+    .order('position', { ascending: true });
+
+  if (!data || !data.length) {
+    wrap.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+      No current FYB students. Upload the first one below.
+    </div>`;
+    return;
+  }
+
+  const maxPos = Math.max(...data.map(s => s.position));
+
+  wrap.innerHTML = data.map(s => `
+    <div class="fyb-admin-card ${s.position === maxPos ? 'is-oldest' : ''}">
+      <img src="${s.image_url}" alt="${s.name}"/>
+      <div class="fyb-admin-card-body">
+        <div>
+          <strong>${s.name}</strong>
+          ${s.position === maxPos
+            ? `<span class="fyb-oldest-tag">
+                 <i class="fa-solid fa-arrow-right"></i> Next archived
+               </span>`
+            : ''
+          }
+        </div>
+        <div class="fyb-admin-pos">${s.position}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function loadFybPast() {
+  const list = document.getElementById('fybPastList');
+  if (!list) return;
+
+  const { data } = await supabase
+    .from('fyb_students')
+    .select('*')
+    .eq('status', 'past')
+    .order('posted_at', { ascending: false });
+
+  if (!data || !data.length) {
+    list.innerHTML = `<div class="empty-state">
+      Archive is empty. Past students appear here as new ones are added.
+    </div>`;
+    return;
+  }
+
+  list.innerHTML = data.map(s => `
+    <div class="fyb-admin-archive-item">
+      <img src="${s.image_url}" alt="${s.name}"/>
+      <div class="fyb-admin-archive-label">${s.name}</div>
+      <button class="fyb-del-btn"
+              onclick="deleteFybStudent('${s.id}')"
+              title="Remove from archive">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+  `).join('');
+}
+
+async function postFybStudent() {
+  const name    = document.getElementById('fybName').value.trim();
+  const imgEl   = document.getElementById('fybImage');
+  const msg     = document.getElementById('fybMsg');
+
+  if (!name) {
+    msg.className = 'admin-form-msg error';
+    msg.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Student name is required.';
+    return;
+  }
+  if (!imgEl.files || !imgEl.files[0]) {
+    msg.className = 'admin-form-msg error';
+    msg.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Please select the FYB poster image.';
+    return;
+  }
+
+  msg.className = 'admin-form-msg success';
+  msg.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Uploading image...';
+
+  const file     = imgEl.files[0];
+  const ext      = file.name.split('.').pop().toLowerCase();
+  const fileName = `fyb/${Date.now()}.${ext}`;
+
+  const { error: upErr } = await supabase.storage
+    .from('exec-photos')
+    .upload(fileName, file, { upsert: true, contentType: file.type });
+
+  if (upErr) {
+    msg.className = 'admin-form-msg error';
+    msg.innerHTML = '<i class="fa-solid fa-xmark"></i> Image upload failed: ' + upErr.message;
+    return;
+  }
+
+  const { data: urlData } = supabase.storage
+    .from('exec-photos').getPublicUrl(fileName);
+  const image_url = urlData.publicUrl + '?t=' + Date.now();
+
+  msg.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Updating rotation...';
+
+  const { data: current } = await supabase
+    .from('fyb_students')
+    .select('*')
+    .eq('status', 'current')
+    .order('position', { ascending: true });
+
+  if (current && current.length >= 3) {
+    const oldest = current.reduce((a,b) => a.position > b.position ? a : b);
+    await supabase
+      .from('fyb_students')
+      .update({ status: 'past', position: 0 })
+      .eq('id', oldest.id);
+  }
+
+  if (current) {
+    for (const s of current) {
+      if (s.status === 'current') {
+        await supabase
+          .from('fyb_students')
+          .update({ position: s.position + 1 })
+          .eq('id', s.id);
+      }
+    }
+  }
+
+  const { error: insErr } = await supabase
+    .from('fyb_students')
+    .insert({
+      name,
+      image_url,
+      status:    'current',
+      position:  1,
+      posted_at: new Date().toISOString()
+    });
+
+  if (insErr) {
+    msg.className = 'admin-form-msg error';
+    msg.innerHTML = '<i class="fa-solid fa-xmark"></i> Failed to save: ' + insErr.message;
+    return;
+  }
+
+  msg.innerHTML = '<i class="fa-solid fa-circle-check"></i> FYB student posted! Site updated live.';
+
+  document.getElementById('fybName').value = '';
+  document.getElementById('fybImage').value = '';
+  document.getElementById('fybPreviewWrap').style.display = 'none';
+
+  await loadFybAdmin();
+}
+
+async function deleteFybStudent(id) {
+  if (!confirm('Remove this student from the archive permanently?')) return;
+  await supabase.from('fyb_students').delete().eq('id', id);
+  loadFybPast();
+}
