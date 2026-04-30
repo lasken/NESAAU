@@ -1040,6 +1040,73 @@
   </div>
 </section>
 
+  <section class="section fyb-section" id="fyb">
+  <div class="container">
+
+    <div class="fyb-hdr">
+      <div class="section-label">
+        <i class="fa-solid fa-graduation-cap"></i> Final Year Spotlight
+      </div>
+      <h2 class="section-title">
+        FYB <span class="gold">of the Week</span>
+      </h2>
+      <p class="section-sub">
+        Celebrating our outstanding final year Economics students.
+        A new face every week — the oldest moves to the hall of fame.
+      </p>
+    </div>
+
+    <!-- 3 poster images -->
+    <div class="fyb-gallery" id="fybGallery">
+      <div class="fyb-gallery-loading">
+        <i class="fa-solid fa-spinner fa-spin"></i>
+        Loading this week's FYB students...
+      </div>
+    </div>
+
+    <!-- Lightbox -->
+    <div class="fyb-lightbox" id="fybLightbox" onclick="closeFybLightbox()">
+      <button class="fyb-lb-close" onclick="closeFybLightbox()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <button class="fyb-lb-prev" onclick="fybLightboxNav(-1); event.stopPropagation()">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+      <img class="fyb-lb-img" id="fybLightboxImg" src="" alt=""/>
+      <button class="fyb-lb-next" onclick="fybLightboxNav(1); event.stopPropagation()">
+        <i class="fa-solid fa-chevron-right"></i>
+      </button>
+      <div class="fyb-lb-name" id="fybLightboxName"></div>
+    </div>
+
+    <!-- Past FYB toggle -->
+    <div class="fyb-archive-toggle">
+      <button class="fyb-archive-btn" onclick="toggleFybArchive()">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+        View Past FYB Students
+      </button>
+    </div>
+
+    <div class="fyb-archive-wrap" id="fybArchiveWrap" style="display:none;">
+      <div class="fyb-archive-inner">
+        <div class="fyb-archive-hdr">
+          <h3>
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            Hall of Fame — Past FYB Students
+          </h3>
+          <button onclick="toggleFybArchive()">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="fyb-archive-grid" id="fybArchiveGrid">
+          <div class="fyb-gallery-loading">Loading archive...</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
 <section class="section testimonials-section" id="testimonials">
   <div class="container">
     <div class="section-label tc">Member Voices</div>
