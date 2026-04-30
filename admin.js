@@ -116,6 +116,7 @@ function showPanel(name, btn) {
   if (name === 'pastadmins')    loadPastAdminAdmin();
   if (name === 'announcements') loadAdminAnnouncements();
   if (name === 'spotlight')     loadAdminSpotlight();
+  if (name === 'fyb')           loadFybAdmin();
 }
 
 async function loadSubmissions() {
