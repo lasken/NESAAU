@@ -614,3 +614,139 @@ function togglePastCard(bodyId, arrowId) {
   body.classList.toggle('open');
   arrow.classList.toggle('open');
 }
+
+let fybData          = [];   
+let fybArchiveLoaded = false;
+let fybLightboxIndex = 0;
+
+async function loadFybStudents() {
+  const gallery = document.getElementById('fybGallery');
+  if (!gallery) return;
+
+  const { data, error } = await supabase
+    .from('fyb_students')
+    .select('*')
+    .eq('status', 'current')
+    .order('position', { ascending: true })
+    .limit(3);
+
+  if (error || !data || !data.length) {
+    gallery.innerHTML = `<div class="fyb-gallery-loading">
+      <i class="fa-solid fa-hourglass-half"></i>
+      No FYB students this week yet. Check back soon!
+    </div>`;
+    return;
+  }
+
+  fybData = data;
+
+  gallery.innerHTML = data.map((s, i) => `
+    <div class="fyb-poster-wrap" onclick="openFybLightbox(${i})">
+      <div class="fyb-pos-badge ${i===0 ? 'newest' : ''}">${s.position}</div>
+      <img class="fyb-poster-img" src="${s.image_url}"
+           alt="${s.name}" loading="lazy"/>
+      <div class="fyb-poster-overlay">
+        <div class="fyb-overlay-name">${s.name}</div>
+        <div class="fyb-overlay-tap">
+          <i class="fa-solid fa-expand"></i> Tap to view full
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openFybLightbox(index) {
+  fybLightboxIndex = index;
+  const s   = fybData[index];
+  const lb  = document.getElementById('fybLightbox');
+  const img = document.getElementById('fybLightboxImg');
+  const nm  = document.getElementById('fybLightboxName');
+
+  img.src   = s.image_url;
+  img.alt   = s.name;
+  nm.textContent = s.name;
+  lb.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeFybLightbox() {
+  document.getElementById('fybLightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function fybLightboxNav(dir) {
+  fybLightboxIndex = (fybLightboxIndex + dir + fybData.length) % fybData.length;
+  openFybLightbox(fybLightboxIndex);
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeFybLightbox();
+  if (e.key === 'ArrowLeft')  fybLightboxNav(-1);
+  if (e.key === 'ArrowRight') fybLightboxNav(1);
+});
+
+function toggleFybArchive() {
+  const wrap = document.getElementById('fybArchiveWrap');
+  const isOpen = wrap.style.display !== 'none';
+  if (isOpen) {
+    wrap.style.display = 'none';
+  } else {
+    wrap.style.display = 'block';
+    wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (!fybArchiveLoaded) {
+      loadFybArchive();
+      fybArchiveLoaded = true;
+    }
+  }
+}
+
+async function loadFybArchive() {
+  const grid = document.getElementById('fybArchiveGrid');
+  if (!grid) return;
+
+  const { data, error } = await supabase
+    .from('fyb_students')
+    .select('*')
+    .eq('status', 'past')
+    .order('posted_at', { ascending: false });
+
+  if (error || !data || !data.length) {
+    grid.innerHTML = `<div class="fyb-gallery-loading">
+      No past FYB students yet.
+      They appear here as new ones are added each week.
+    </div>`;
+    return;
+  }
+
+  const archiveData = data;
+
+  grid.innerHTML = data.map((s, i) => `
+    <div class="fyb-archive-item"
+         onclick="openArchiveLightbox('${s.image_url}','${s.name}')">
+      <img src="${s.image_url}" alt="${s.name}" loading="lazy"/>
+      <div class="fyb-archive-label">${s.name}</div>
+    </div>
+  `).join('');
+}
+
+function openArchiveLightbox(url, name) {
+  const lb  = document.getElementById('fybLightbox');
+  const img = document.getElementById('fybLightboxImg');
+  const nm  = document.getElementById('fybLightboxName');
+  img.src        = url;
+  img.alt        = name;
+  nm.textContent = name;
+  document.querySelector('.fyb-lb-prev').style.display = 'none';
+  document.querySelector('.fyb-lb-next').style.display = 'none';
+  lb.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+const _closeFybLightbox = closeFybLightbox;
+window.closeFybLightbox = function() {
+  _closeFybLightbox();
+  document.querySelector('.fyb-lb-prev').style.display = '';
+  document.querySelector('.fyb-lb-next').style.display = '';
+};
+
+document.addEventListener('DOMContentLoaded', loadFybStudents);
